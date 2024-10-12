@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хлебзавод «Хлебушек»</title>
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+</head>
+
+<body>
+
+
+<!-- Header -->
+<header class="header">
+    <nav class="nav">
+        <img src="/images/1.png" class="logo">
+        <a href="" class="nav_logo">«Хлебушек»</a>
+        <ul class="nav_items">
+            <li class="nav_item">
+                <a href="/profile" class="nav_link">Личный кабинет</a>
+            </li>
+        </ul>
+        <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
+    </nav>
+</header>
+<script type="text/javascript" src="/js/scripts.js"></script>
+<div class="margintop"></div>
+
+<main>
+
+    <aside id="left"></aside>
+    <article>
+        <h1 id="admin">Admin панель</h1>
+        <div id="changeMenu">
+            <h3 id="headline">Редактор продукции</h3>
+            <div id="header">
+                <table id="thead">
+                    <tr>
+                        <td>Название</td>
+                        <td>Количество</td>
+                        <td>Новое количество</td>
+                        <td>Цена</td>
+                        <td>Новая цена</td>
+                    </tr>
+                </table>
+            </div>
+            <div action="products" class="changeProd">
+            </div>
+        </div>
+        <div id="historyMenu">
+            <h3 id="history">История заказов</h3>
+            <div id="header2">
+                <table id="thead2">
+                    <tr>
+                        <td>Пользователь</td>
+                        <td>Название</td>
+                        <td>Количество</td>
+                        <td>Удаление</td>
+                    </tr>
+                </table>
+            </div>
+            <div  class="changeOrder">
+
+            </div>
+        </div>
+    </article>
+    <aside id="right"></aside>
+</main>
+<script th:inline="javascript">
+    var products = [[${products}]];
+    var html = "";
+    let quantityNew = [];
+    let priceNew = [];
+    for (let i = 0; i < products.length; i++) {
+        html += `<table>
+    <tr>
+        <td>
+            <label for="bread${i}">${products[i]["nameProd"]}</label>
+        </td>
+            <td>
+            <span id="bread${i}Value">${products[i]["quantityProd"]}</span>
+        </td>
+        <td>
+            <input type="text" id="newQuant${i}"/>
+        </td>
+        <td>
+            <span id="bread${i}Price">${products[i]["priceProd"]}</span>
+        </td>
+        <td>
+            <input type="text" id="newPrice${i}"/>
+        </td>
+        
+    </tr>
+</table>
+    `;
+    }
+    html += `
+            <div class="container">
+                <button type="button" class="changeButton">Изменить</button>
+            </div>
+
+`
+    let add = document.querySelector(".changeProd");
+    add.innerHTML = html;
+    let button = document.querySelector(".changeButton");
+    button.addEventListener('click', function () {
+        for (let i = 0; i < products.length; i++) {
+            let newQuant = document.getElementById("newQuant" + i).value * 1;
+            let newPrice = document.getElementById("newPrice" + i).value * 1;
+            let quantity = parseInt(document.getElementById("bread" + i + "Value").textContent);
+            let price = parseFloat(document.getElementById("bread" + i + "Price").textContent);
+            if (newQuant !== 0)
+                quantityNew.push(newQuant);
+            else
+                quantityNew.push(quantity);
+            if (newPrice !== 0)
+                priceNew.push(newPrice);
+            else
+                priceNew.push(price);
+
+        }
+        var xhr = new XMLHttpRequest();
+        // var url = "";
+        // fetch('http://127.0.0.1:4040/api/tunnels')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         const publicUrl = data.tunnels[0].public_url;
+        //         const ipAddress = new URL(publicUrl).hostname;
+        //         url = ipAddress
+        //     })
+        //     .catch(error => console.error('Ошибка получения IP-адреса ngrok:', error));
+        // var data = JSON.stringify({"typeData":"product","quantity": quantityNew, "price": priceNew});
+
+        // xhr.open("POST", url, true);
+        xhr.open("POST", "http://localhost:8080/admin/editProduct", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data);
+        priceNew = [];
+        quantityNew = [];
+        for (let i = 0; i < products.length; i++) {
+            let newQuant = document.getElementById("newQuant" + i).value * 1;
+            let newPrice = document.getElementById("newPrice" + i).value * 1;
+
+            if (newQuant !== 0) {
+                document.getElementById("bread" + i + "Value").textContent = newQuant;
+
+            }
+            if (newPrice !== 0) {
+                document.getElementById("bread" + i + "Price").textContent = newPrice;
+            }
+
+        }
+
+    });
+    
+    var orders = [[${orders}]];
+    var htmlOrder = "";
+    let quantityNewOrder = [];
+    for (let i = 0; i < orders.length; i++) {
+        htmlOrder += `<table>
+    <tr>
+        <td>
+            <span for="name${i}">${orders[i]["user"]["login"]}</span>
+        </td>
+            <td>
+            <label id="bread${i}Value">${orders[i]["product"]["nameProd"]}</label>
+        </td>
+        <td>
+            <input type="text" id="orderQuantity${i}" Value=${orders[i]["quantity"]}>
+        </td>
+        <td>
+        <form id="${i}" action="/admin/orderDelete/${orders[i]["id"]}" method="post">
+         <input type="submit"  value="Удалить заказ">
+        </form>
+        </td>
+    </tr>
+</table>
+    `;
+    }
+    htmlOrder += `
+            <div class="container">
+                <button type="button" class="buttonOrder">Изменить</button>
+            </div>
+
+`
+    let addOrder = document.querySelector(".changeOrder");
+    addOrder.innerHTML = htmlOrder;
+    let butOrder = document.querySelector(".buttonOrder");
+    butOrder.addEventListener('click', function () {
+        for (let i = 0; i < orders.length; i++) {
+            let newQuant = document.getElementById("orderQuantity"+i).value;
+            quantityNewOrder.push(newQuant);
+        }
+           var data = JSON.stringify({"quantity": quantityNewOrder});
+        var xhr = new XMLHttpRequest();
+        var url = "";
+        // fetch('http://127.0.0.1:4040/api/tunnels')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         const publicUrl = data.tunnels[0].public_url;
+        //         const ipAddress = new URL(publicUrl).hostname;
+        //         url = ipAddress
+        //     })
+        //     .catch(error => console.error('Ошибка получения IP-адреса ngrok:', error));
+        // xhr.open("POST", url, true);
+        xhr.open("POST", "http://localhost:8080/admin/editOrder", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data);
+        quantityNewOrder = [];
+    });
+
+   </script>
+<footer>
+    <p>© ОАО «Хлебушек», 2024</p>
+</footer>
+<a href='#' class="stt"></a>
+<link rel="stylesheet" type="text/css" href="/css/styleA.css?v=5">
+
+</body>
+
+</html>

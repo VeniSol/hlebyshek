@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хлебзавод «Хлебушек»</title>
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" type="text/css" href="/css/styleO.css?v=12353">
+</head>
+<body>
+
+
+<!-- Header -->
+<header class="header">
+    <nav class="nav">
+        <ul id="logo">
+            <img src="/images/1.png" class="logo">
+            <a href="" class="nav_logo">«Хлебушек»</a>
+        </ul>
+        <ul class="nav_items">
+            <li class="nav_item">
+                <a href="/profile" class="nav_link">Личный кабинет</a>
+            </li>
+        </ul>
+        <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
+    </nav>
+</header>
+<script type="text/javascript" src="/js/scripts.js"></script>
+<div class="margintop"></div>
+
+<main>
+    <aside id="left"></aside>
+    <article>
+        <h1 id="headline">Заказ продукции</h1>
+
+        <div id="header">
+            <table id="thead">
+                <tr>
+                    <td>Название</td>
+                    <td>Введите количество</td>
+                    <td>Доступно</td>
+                    <td>Цена</td>
+                </tr>
+            </table>
+
+        </div>
+        <form action="ordering" class="order">
+
+        </form>
+    </article>
+    <aside id="right"></aside>
+</main>
+<script th:inline="javascript">
+    var products = [[${products}]];
+    var html = "";
+    let quantityNew = [];
+    for (let i = 0; i < products.length; i++) {
+        html += `<table>
+    <tr>
+        <td>
+            <label for="bread${i}">${products[i]["nameProd"]}</label>
+        </td>
+        <td>
+            <input type="text" id="bread${i}"/>
+        </td>
+        <td>
+            <span id="bread${i}Value">${products[i]["quantityProd"]}</span>
+        </td>
+        <td>
+            <span id="bread${i}Price">${products[i]["priceProd"]}</span>
+        </td>
+    </tr>
+</table>
+    `;
+    }
+    html += `
+            <div class="container">
+                <button type="button" class="but">Заказать</button>
+            </div>
+            <h1 id="order"></h1>
+`
+    let add = document.querySelector(".order");
+    add.innerHTML = html;
+    let button = document.querySelector(".but");
+    button.addEventListener('click', function () {
+        let success = 0;
+        for (let i = 0; i < products.length; i++) {
+            let prodId = products[i]["id"];
+            let inputQuantity = document.getElementById("bread" + i).value * 1;
+            let quantity = parseInt(document.getElementById("bread" + i + "Value").textContent);
+
+            if (inputQuantity <= quantity && inputQuantity >= 0) {
+                success += 1;
+                if (inputQuantity !== 0)
+                    quantityNew.push({prodId: prodId, quantity: inputQuantity});
+            }
+        }
+
+        if (success === products.length) {
+            document.getElementById("order").textContent = "Успешно";
+            var xhr = new XMLHttpRequest();
+            // var url = "";
+            // fetch('http://127.0.0.1:4040/api/tunnels')
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         const publicUrl = data.tunnels[0].public_url;
+            //         const ipAddress = new URL(publicUrl).hostname;
+            //         url = ipAddress
+            //     })
+            //     .catch(error => console.error('Ошибка получения IP-адреса ngrok:', error));
+
+            let user = getCookie("cyxaruk");
+            let data = JSON.stringify({"user": user, "quant_list": quantityNew});
+
+            // xhr.open("POST", url, true);
+            xhr.open("POST", "http://localhost:8080/ordering", true);
+
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(data);
+            for (let i = 0; i < products.length; i++) {
+                let inputQuantity = document.getElementById("bread" + i).value * 1;
+                let quantity = parseInt(document.getElementById("bread" + i + "Value").textContent);
+                document.getElementById("bread" + i + "Value").textContent = quantity - inputQuantity;
+            }
+
+
+        } else {
+            document.getElementById("order").textContent = "Неверно введено количество";
+            quantityNew = []
+        }
+    });
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+</script>
+<footer>
+    <p>© ОАО «Хлебушек», 2024</p>
+</footer>
+<a href='#' class="stt"></a>
+<link rel="stylesheet" type="text/css" href="/css/styleO.css?v=6">
+
+</body>
+
+</html>

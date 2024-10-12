@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хлебзавод «Хлебушек»</title>
+    <link th:href="@{/css/style.css?v=1234}" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+
+
+</head>
+
+<body>
+<!-- Header -->
+<header class="header">
+    <nav class="nav">
+        <ul id="logo">
+        <img src="/images/1.png" class="logo">
+        <a href="/" class="nav_logo">«Хлебушек»</a>
+        </ul>
+        <ul class="nav_items">
+            <li class="nav_item">
+                <a href="#aboutUs" class="nav_link">О нас</a>
+                <a href="#contacts" class="nav_link">Контакты</a>
+                <a href="/products" class="nav_link">Продукция</a>
+            </li>
+        </ul>
+        <button class="button" id="form-open">Вход</button>
+    </nav>
+</header>
+<!-- Home -->
+<section class="home">
+    <div class="form_container">
+        <i class="uil uil-times form_close"></i>
+        <!-- Login From -->
+        <div class="form login_form">
+            <form action="/login" method="post" th:object="${user}">
+                <h2>Вход</h2>
+                <p style="color:red;text-align: center;margin-top:20px " id="err">
+                <div class="input_box">
+                    <input id="log1" type="text" placeholder="Введите ваш логин" th:field="*{login}" required>
+                    <i class="uil uil-envelope-alt email"></i>
+                </div>
+                <div class="input_box">
+                    <input id="pas1" type="password" placeholder="Введите ваш пароль" th:field="*{password}" required>
+                    <i class="uil uil-lock password"></i>
+                    <i class="uil uil-eye-slash pw_hide"></i>
+                </div>
+                <button class="button">Войти</button>
+                <div class="login_signup">
+                    У вас нет учетной записи? <a href="#" id="signup">Зарегистрироваться</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Signup From -->
+        <div class="form signup_form">
+            <form action="/signup" method="post" th:object="${user}">
+                <h2>Регистрация</h2>
+                <p style="color:red;text-align: center" id="err2">
+                <div class="input_box">
+
+                    <input id="log2" type="text" placeholder="Введите ваш логин" th:field="*{login}" required>
+                    <i class="uil uil-envelope-alt email"></i>
+                </div>
+                <div class="input_box">
+                    <input id="pas2" type="password" placeholder="Придумайте пароль" th:field="*{password}" required>
+                    <i class="uil uil-lock password"></i>
+                    <i class="uil uil-eye-slash pw_hide"></i>
+                </div>
+
+                <button class="button">Зарегестрировться</button>
+                <div class="login_signup">
+                    Уже есть учетная запись? <a href="#" id="login">Вход</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" src="/js/scripts.js"></script>
+
+
+<main>
+    <aside id="left"></aside>
+    <article>
+        <h1 style="margin-top:0;">О нас</h1>
+        <p id="aboutUs">"Наш хлебозавод - это семейная компания с более чем 20-летней историей производства
+            высококачественных хлебобулочных изделий. Мы гордимся своими традициями и стремимся к постоянному
+            совершенствованию производства, чтобы предложить нашим клиентам только лучшее.</p>
+        <p>Мы используем только натуральные ингредиенты высокого качества, следим за каждым этапом производства, чтобы
+            обеспечить безупречный вкус и свежесть нашей продукции. Наша команда профессионалов тщательно следит за
+            качеством каждой партии хлеба, чтобы уверенно заявлять, что каждый кусочек хлеба, который мы производим,
+            приносит радость и удовольствие нашим клиентам.</p>
+        <p>Мы гордимся тем, что наш хлеб не только вкусен, но и полезен - мы следим за питательной ценностью нашей
+            продукции, чтобы предложить здоровые и питательные хлебобулочные изделия для всей семьи.</p>
+        <p>Благодаря нашему опыту, страсти к качеству и преданности нашим клиентам, мы рады предложить вам лучший хлеб
+            от
+            нашего завода.</p>
+        <h1>Контакты</h1>
+        <p id="contacts">Адрес:</p>
+        <p>г. Могилев, Республика Беларусь</p>
+        <p>Учредитель:</p>
+        <p>Открытое акционерное общество «Хлебушек»</p>
+        <p>Режим работы:</p>
+        <p>Работники административного корпуса: с 8.00 до 17.00 (обед с 12.00 до 13.00), выходной – суббота,
+            воскресенье.
+        </p>
+        <p>Работники производственных и вспомогательных цехов: согласно установленному посменному графику работы.</p>
+    </article>
+    <aside id="right"></aside>
+</main>
+<footer>
+        <p>© ОАО «Хлебушек», 2024</p>
+</footer>
+<a href='#' class="stt"></a>
+</body>
+<script type="text/javascript" th:src="@{/js/validator.js}"></script>
+
+
+</html>

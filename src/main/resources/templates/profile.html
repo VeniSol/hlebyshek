@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хлебзавод «Хлебушек»</title>
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+</head>
+
+<body>
+
+
+<!-- Header -->
+<header class="header">
+    <nav class="nav">
+        <ul id="logo">
+            <img src="/images/1.png" class="logo">
+            <a href="" class="nav_logo">«Хлебушек»</a>
+        </ul>
+        <ul class="nav_items">
+            <li class="nav_item">
+                <a href="/ordering" class="nav_link">Заказ продукции</a>
+                <a href="/admin" th:if="${user.getRole() == T(com.base.new_base.Entity.Role).ADMIN}" class="nav_link">Admin панель</a>
+            </li>
+        </ul>
+        <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
+    </nav>
+</header>
+<script type="text/javascript" src="/js/scripts.js"></script>
+<div class="margintop"></div>
+
+<main>
+
+    <aside id="left"></aside>
+    <article>
+        <h1 id="profile">Личный кабинет</h1>
+        <h1 id="nameUser"></h1>
+        <div id="historyMenu">
+            <h3 id="history">История заказов</h3>
+            <div id="header2">
+                <table id="thead2">
+                    <tr>
+                        <td>Название</td>
+                        <td>Количество</td>
+                        <td>Отмена заказа</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="changeOrder"></div>
+        </div>
+    </article>
+    <aside id="right"></aside>
+</main>
+<script th:inline="javascript">
+    var orders = [[${orders}]];
+    var htmlOrder = "";
+    var name = getCookie("cyxaruk");
+    let quantityNewOrder = [];
+    document.getElementById("nameUser").textContent = name;
+    for (let i = 0; i < orders.length; i++) {
+        htmlOrder += `<table>
+    <tr>
+        <td>
+            <label id="bread${i}Value">${orders[i]["product"]["nameProd"]}</label>
+        </td>
+        <td>
+            <label id="orderQuantity${i}">${orders[i]["quantity"]}</label>
+        </td>
+        <td>
+        <form id="${i}" action="/orderDelete/${orders[i]["id"]}" method="post">
+         <input type="submit"  value="Отмена">
+        </form>
+        </td>
+    </tr>
+</table>
+    `;
+    }
+    let addOrder = document.querySelector(".changeOrder");
+    addOrder.innerHTML = htmlOrder;
+    let butOrder = document.querySelector(".buttonOrder");
+    butOrder.addEventListener('click', function () {
+        for (let i = 0; i < orders.length; i++) {
+            let newQuant = document.getElementById("orderQuantity" + i).value;
+            quantityNewOrder.push(newQuant);
+        }
+        var data = JSON.stringify({"typeData": "order", "quantity": quantityNewOrder});
+        var xhr = new XMLHttpRequest();
+        var url = "";
+        // fetch('http://127.0.0.1:4040/api/tunnels')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         const publicUrl = data.tunnels[0].public_url;
+        //         const ipAddress = new URL(publicUrl).hostname;
+        //         url = ipAddress
+        //     })
+        //     .catch(error => console.error('Ошибка получения IP-адреса ngrok:', error));
+        // xhr.open("POST", url, true);
+        xhr.open("POST", "http://localhost:8080/profile", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data);
+        quantityNewOrder = [];
+    });
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+</script>
+<footer>
+    <p>© ОАО «Хлебушек», 2024</p>
+</footer>
+<a href='#' class="stt"></a>
+<link rel="stylesheet" type="text/css" href="/css/styleProf.css?v=5">
+
+</body>
+
+</html>

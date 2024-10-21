@@ -7,7 +7,7 @@
     <title>Хлебзавод «Хлебушек»</title>
     <link rel="shortcut icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" type="text/css" href="/css/styleO.css?v=12353">
+    <link rel="stylesheet" type="text/css" href="/css/styleO.css?v=1233">
 </head>
 <body>
 
@@ -17,7 +17,7 @@
     <nav class="nav">
         <ul id="logo">
             <img src="/images/1.png" class="logo">
-            <a href="" class="nav_logo">«Хлебушек»</a>
+            <a href="/" class="nav_logo">«Хлебушек»</a>
         </ul>
         <ul class="nav_items">
             <li class="nav_item">
@@ -27,7 +27,6 @@
         <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
     </nav>
 </header>
-<script type="text/javascript" src="/js/scripts.js"></script>
 <div class="margintop"></div>
 
 <main>
@@ -75,12 +74,19 @@
 </table>
     `;
     }
-    html += `
-            <div class="container">
-                <button type="button" class="but">Заказать</button>
-            </div>
-            <h1 id="order"></h1>
-`
+    html +=`
+        <div class="container">
+            <table>
+                <td>
+                    <label for="deliveryAddress">Введите адрес доставки: </label>
+                    <input id="deliveryAddress"/>
+                </td>
+            </table>
+
+            <button type="button" class="but">Заказать</button>
+        </div>
+    <h1 id="order"></h1>
+        `
     let add = document.querySelector(".order");
     add.innerHTML = html;
     let button = document.querySelector(".but");

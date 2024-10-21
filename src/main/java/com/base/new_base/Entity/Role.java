@@ -8,7 +8,8 @@ import java.util.Set;
 
 @Getter
 public enum Role {
-    ADMIN(Set.of(Permission.ADMIN,Permission.USER)),
+    ADMIN(Set.of(Permission.ADMIN,Permission.DELIVERY,Permission.USER)),
+    DRIVER(Set.of(Permission.DELIVERY)),
     USER(Set.of(Permission.USER));
 
     private final Set<Permission> permissions;

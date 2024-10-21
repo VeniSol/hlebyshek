@@ -1,41 +1,14 @@
 package com.base.new_base.Entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
 @Table(name = "products")
 public class Product {
-    public Product() {}
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNameProd() {
-        return nameProd;
-    }
-
-    public void setNameProd(String nameProd) {
-        this.nameProd = nameProd;
-    }
-
-    public Double getPriceProd() {
-        return priceProd;
-    }
-
-    public void setPriceProd(Double priceProd) {
-        this.priceProd = priceProd;
-    }
-    public int getQuantityProd() {
-        return quantityProd;
-    }
-
-    public void setQuantityProd(int quantityProd) {
-        this.quantityProd = quantityProd;
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

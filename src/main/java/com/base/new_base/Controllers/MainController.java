@@ -53,16 +53,12 @@ public class MainController {
         return "main";
     }
 
-
-
     @PostMapping("/login")
     public String loginSent(HttpServletResponse response, @ModelAttribute("user") UserDTO userDTO) {
         UserDTO user = userService.findByLogin(userDTO.getLogin());
         if (user != null) {
             if (user.getPassword().equals(hashEncode.SHA256(userDTO.getPassword()))) {
-                Cookie cookie = new Cookie("cyxaruk", userDTO.getLogin());
-                cookie.setMaxAge(24 * 60 * 60); // Время жизни в секунадах
-                response.addCookie(cookie);
+                setCookie(response, user);
                 return "redirect:/ordering";
             } else {
                 return "redirect:/?error";
@@ -73,12 +69,19 @@ public class MainController {
     }
 
     @PostMapping("/signup")
-    public String signUpSent(@ModelAttribute("user") UserDTO userDTO) {
+    public String signUpSent(@ModelAttribute("user") UserDTO userDTO,HttpServletResponse response,@ModelAttribute("user") UserDTO user) {
         userDTO.setPassword(hashEncode.SHA256(userDTO.getPassword()));
         userDTO.setRole(Role.USER);
         userService.save(userDTO);
-        return "main";
+        setCookie(response, user);
+        return "redirect:/ordering";
 
+    }
+
+    private void setCookie(HttpServletResponse response, UserDTO user){
+        Cookie cookie = new Cookie("cyxaruk", user.getLogin());
+        cookie.setMaxAge(24 * 60 * 60);
+        response.addCookie(cookie);
     }
 
     @GetMapping("/products")
@@ -159,7 +162,8 @@ public class MainController {
         String login = sessionService.getCookie("cyxaruk", request);
         UserDTO user = userService.findByLogin(login);
         List<OrderDTO> orders = user.getOrder();
-        model.addAttribute("orders", orders);
+        model.addAttribute("activeOrders", orders);
+        model.addAttribute("deliveryOrders", orders);
         model.addAttribute("user", user);
         return "profile";
     }

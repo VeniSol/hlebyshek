@@ -19,9 +19,17 @@ const formOpenBtn = document.querySelector("#form-open"),
 
 
 formOpenBtn.addEventListener("click", () => {
-        if (checkCookie("cyxaruk"))
-            window.location.replace("/profile");
-        else
+        if (checkCookie("cyxaruk")) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/get-role", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+            xhr.onreadystatechange = (e) => {
+                console.log(xhr.responseText);
+            }
+
+            // window.location.replace("/profile");
+        } else
             home.classList.add("show")
     }
 )

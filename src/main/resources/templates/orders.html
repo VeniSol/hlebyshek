@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хлебзавод «Хлебушек»</title>
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="/css/otherStyle.css">
+</head>
+
+<body>
+<header class="header">
+    <nav class="nav">
+        <ul id="logo">
+            <img src="/images/1.png" class="logo" alt="Логотип компании">
+            <a href="/" class="nav_logo">«Хлебушек»</a>
+        </ul>
+        <ul class="nav_items">
+            <li class="nav_item">
+                <a href="/profile" class="nav_link">Личный кабинет</a>
+                <a href="/admin" class="nav_link">Редактор продукции</a>
+            </li>
+        </ul>
+        <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
+    </nav>
+</header>
+<div class="margintop"></div>
+
+<main>
+    <aside id="left"></aside>
+    <article>
+        <h1 id="panelName">Admin панель</h1>
+        <div id="menu">
+            <h3 id="tableName">История заказов</h3>
+
+            <!-- Фильтры для поиска -->
+            <div id="filters">
+                <!-- Фильтр по типу заказа -->
+                <label for="orderStatus">Тип заказа</label>
+                <select id="orderStatus">
+                    <option value="active">Активные</option>
+                    <option value="delivered">Доставленные</option>
+                </select>
+
+                <!-- Фильтр по пользователям -->
+                <label for="userSelect">Пользователь</label>
+                <select id="userSelect">
+                    <option value="all">Все пользователи</option>
+                    <!-- Здесь будут подгружаться пользователи из сервера -->
+                </select>
+
+                <!-- Фильтр по времени -->
+                <label for="startTime">Дата с</label>
+                <input type="date" id="startTime">
+                <label for="endTime">Дата по</label>
+                <input type="date" id="endTime">
+
+                <!-- Кнопка для применения фильтров -->
+                <button id="filterBtn">Вывод заказов</button>
+            </div>
+
+            <div id="header">
+                <table id="thead">
+                    <tr>
+                        <td>Пользователь</td>
+                        <td>Название</td>
+                        <td>Количество</td>
+                        <td>Удаление</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="changeOrder"></div>
+        </div>
+    </article>
+    <aside id="right"></aside>
+</main>
+
+<footer>
+    <p>© ОАО «Хлебушек», 2024</p>
+</footer>
+<a href='#' class="stt"></a>
+
+<!-- Скрипт -->
+<script th:inline="javascript">
+    var orders = [[${orders}]];
+    var users = [[${users}]];  // список пользователей с сервера
+    var htmlOrder = "";
+    let quantityNewOrder = [];
+
+    // Добавление пользователей в выпадающий список
+    let userSelect = document.getElementById("userSelect");
+    users.forEach(user => {
+        let option = document.createElement("option");
+        option.value = user.id;
+        option.textContent = user.login;
+        userSelect.appendChild(option);
+    });
+
+    // Функция отображения заказов
+    function renderOrders(orders) {
+        htmlOrder = "";
+        for (let i = 0; i < orders.length; i++) {
+            htmlOrder += `<table>
+            <tr>
+                <td><span for="name${i}">${orders[i]["user"]["login"]}</span></td>
+                <td><label id="bread${i}Value">${orders[i]["product"]["nameProd"]}</label></td>
+                <td><input type="text" id="orderQuantity${i}" Value=${orders[i]["quantity"]}></td>
+                <td>
+                    <form id="${i}" action="/admin/orderDelete/${orders[i]["id"]}" method="post">
+                        <input type="submit" value="Удалить заказ">
+                    </form>
+                </td>
+            </tr>
+            </table>`;
+        }
+        htmlOrder += `
+            <div class="container">
+                <button type="button" id="changeBtn" class="buttonOrder">Изменить</button>
+            </div>`;
+        document.querySelector(".changeOrder").innerHTML = htmlOrder;
+
+        // Обработчик изменения заказов
+        document.querySelector(".buttonOrder").addEventListener('click', function () {
+            for (let i = 0; i < orders.length; i++) {
+                let newQuant = document.getElementById("orderQuantity" + i).value;
+                quantityNewOrder.push(newQuant);
+            }
+            var data = JSON.stringify({"quantity": quantityNewOrder});
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8080/admin/editOrder", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(data);
+            quantityNewOrder = [];
+        });
+    }
+
+    // Первоначальная загрузка заказов
+    renderOrders(orders);
+
+    // Обработка фильтров
+    document.getElementById("filterBtn").addEventListener("click", function () {
+        var status = document.getElementById("orderStatus").value;
+        var userId = document.getElementById("userSelect").value;
+        var startDate = document.getElementById("startTime").value;
+        var endDate = document.getElementById("endTime").value;
+
+        // Формирование фильтров
+        var filteredOrders = orders.filter(order => {
+            var orderDate = new Date(order["orderDate"]);
+            var isStatusMatch = (status === "all" || order["status"] === status);
+            var isUserMatch = (userId === "all" || order["user"]["id"] === userId);
+            var isDateMatch = (!startDate || orderDate >= new Date(startDate)) &&
+                (!endDate || orderDate <= new Date(endDate));
+            return isStatusMatch && isUserMatch && isDateMatch;
+        });
+
+        // Отображение отфильтрованных заказов
+        renderOrders(filteredOrders);
+    });
+</script>
+
+</body>
+</html>

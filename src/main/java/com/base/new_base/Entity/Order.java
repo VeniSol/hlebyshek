@@ -2,6 +2,7 @@ package com.base.new_base.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -20,9 +21,9 @@ public class Order {
     @Column(name = "quantity")
     private Integer quantity;
     @Column(name = "order_date_time")
-    private LocalDate orderDateTime;
+    private LocalDateTime orderDateTime;
     @Column(name = "date_time_of_receipt")
-    private LocalDate dateTimeOfReceipt;
+    private LocalDateTime dateTimeOfReceipt;
     @Column(name = "status")
     private Boolean status;
     @Column(name = "address")

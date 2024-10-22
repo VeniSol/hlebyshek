@@ -18,14 +18,6 @@
             <img src="/images/1.png" class="logo">
             <a href="/" class="nav_logo">«Хлебушек»</a>
         </ul>
-        <ul class="nav_items">
-            <li class="nav_item">
-                <a href="/ordering" class="nav_link">Заказ продукции</a>
-                <a href="/admin" th:if="${user.getRole() == T(com.base.new_base.Entity.Role).ADMIN}"
-                   class="nav_link">Admin
-                    панель</a>
-            </li>
-        </ul>
         <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
     </nav>
 </header>
@@ -50,22 +42,6 @@
                 </table>
             </div>
             <div class="activeOrders"></div>
-        </div>
-        <div id="menu">
-            <h3 id="tableName">Доставленные заказы</h3>
-            <div id="header">
-                <table id="thead">
-                    <tr>
-                        <td>Название</td>
-                        <td>Количество</td>
-                        <td>Адрес доставки</td>
-                        <td>Дата/Время заказа</td>
-                        <td>Дата/Время доставки</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="deliveredOrders"></div>
-        </div>
     </article>
     <aside id="right"></aside>
 </main>
@@ -94,8 +70,8 @@
                     <label id="orderQuantity${i}">${orders[i]["dateTime"]}</label>
                 </td>
                 <td>
-                    <form id="${i}" action="/orderDelete/${orders[i]["id"]}" method="post">
-                        <input type="submit" value="Отмена">
+                    <form id="${i}" action="/setStatus/${orders[i]["id"]}" method="post">
+                        <input type="submit" value="Выполнен">
                     </form>
                 </td>
             </tr>
@@ -104,38 +80,6 @@
     }
     let activeOrders = document.querySelector(".activeOrders");
     activeOrders.innerHTML = html;
-    let orders2 = [[${deliveredOrders}]];
-    let html2 = "";
-    for (let i = 0; i < orders2.length; i++) {
-        html2 += `<table>
-            <tr>
-                <td>
-                    <label id="bread${i}Value">${orders2[i]["product"]["nameProd"]}</label>
-                </td>
-                <td>
-                    <label id="orderQuantity${i}">${orders2[i]["quantity"]}</label>
-                </td>
-                <td>
-                    <label id="orderQuantity${i}">${orders2[i]["address"]}</label>
-                </td>
-                <td>
-                    <label id="orderQuantity${i}">${orders2[i]["dateTime"]}</label>
-                </td>
-                <td>
-                    <label id="orderQuantity${i}">${orders2[i]["dateTimeOfReceipt"]}</label>
-                </td>
-            </tr>
-        </table>
-    `;
-    }
-    let deliveredOrders = document.querySelector(".deliveredOrders");
-    deliveredOrders.innerHTML = html2;
-
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
 </script>
 </body>
 

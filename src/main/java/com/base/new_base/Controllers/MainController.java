@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +61,7 @@ public class MainController {
         if (user != null) {
             if (user.getPassword().equals(hashEncode.SHA256(userDTO.getPassword()))) {
                 setCookie(response, user);
+                if(user.getRole()== Role.DELIVERY) return "redirect:/delivery";
                 return "redirect:/ordering";
             } else {
                 return "redirect:/?error";
@@ -84,10 +87,16 @@ public class MainController {
         response.addCookie(cookie);
     }
 
+    @GetMapping("/delivery")
+    public String goDeliveryMenu(Model model) {
+        return "delivery";
+    }
+
     @GetMapping("/products")
     public String goProducts() {
         return "products";
     }
+
 
     @GetMapping("/ordering")
     public String goOrdering(Model model) {
@@ -100,18 +109,24 @@ public class MainController {
     public String sentOrdering(@RequestBody String requestDataList) throws ParseException {
         JSONObject jsonData = (JSONObject) new JSONParser().parse(requestDataList);
         String userLogin = (String) jsonData.get("user");
+        String address = (String) jsonData.get("address");
+        LocalDateTime currentDateTime = LocalDateTime.now();
         JSONArray quantityArray = (JSONArray) jsonData.get("quant_list");
         for (Object order : quantityArray) {
             JSONObject orderJSON = (JSONObject) order;
             int prodId = (int) (long) orderJSON.get("prodId");
             int quantity = (int) (long) orderJSON.get("quantity");
             productService.updateQuantity(prodId, quantity);
-            OrderDTO orderDTO = new OrderDTO(userService.findByLogin(userLogin), productService.findById(prodId), quantity);
+            OrderDTO orderDTO = new OrderDTO(userService.findByLogin(userLogin), productService.findById(prodId), quantity,address,false);
             orderService.save(orderDTO);
         }
         return "{result:'complete'}";
     }
 
+    @GetMapping("/orders")
+    public String AllOrders(){
+        return "orders";
+    }
     @GetMapping("/admin")
     public String goAdminPanel(Model model) {
         ArrayList<ProductDTO> productDTOS = productService.findAll();
@@ -151,21 +166,20 @@ public class MainController {
         return "{result:'complete'}";
     }
 
-    @PostMapping("/admin/orderDelete/{id}")
-    public String delOrder(@PathVariable int id) {
-        orderService.delOrderById(id);
-        return "redirect:/admin";
-    }
-
     @GetMapping("/profile")
     public String profile(Model model, HttpServletRequest request) {
         String login = sessionService.getCookie("cyxaruk", request);
         UserDTO user = userService.findByLogin(login);
-        List<OrderDTO> orders = user.getOrder();
-        model.addAttribute("activeOrders", orders);
-        model.addAttribute("deliveryOrders", orders);
+        model.addAttribute("activeOrders", orderService.findByUserAndStatus(user,false));
+        model.addAttribute("deliveredOrders",  orderService.findByUserAndStatus(user,true));
         model.addAttribute("user", user);
         return "profile";
+ }
+
+    @PostMapping("/admin/orderDelete/{id}")
+    public String delOrder(@PathVariable int id) {
+        orderService.delOrderById(id);
+        return "redirect:/admin";
     }
 
     @PostMapping("/orderDelete/{id}")
@@ -179,5 +193,11 @@ public class MainController {
         return "redirect:/profile";
     }
 
+    @GetMapping("/get-role")
+    public String getRole(HttpServletRequest request) {
+        String login = sessionService.getCookie("cyxaruk", request);
+        UserDTO user = userService.findByLogin(login);
+        return user.getRole().toString();
+    }
 }
 

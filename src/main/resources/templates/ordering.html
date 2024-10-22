@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html lang="" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Хлебзавод «Хлебушек»</title>
+    <link rel="stylesheet" href="/css/otherStyle.css">
     <link rel="shortcut icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" type="text/css" href="/css/styleO.css?v=1233">
 </head>
+
 <body>
-
-
-<!-- Header -->
 <header class="header">
     <nav class="nav">
         <ul id="logo">
@@ -32,28 +30,34 @@
 <main>
     <aside id="left"></aside>
     <article>
-        <h1 id="headline">Заказ продукции</h1>
+        <h1 id="panelName">Заказ продукции</h1>
+        <div id="menu">
+            <h3 id="tableName">Продукция</h3>
+            <div id="header">
+                <table id="thead">
+                    <tr>
+                        <td>Название</td>
+                        <td>Введите количество</td>
+                        <td>Доступно</td>
+                        <td>Цена</td>
+                    </tr>
+                </table>
 
-        <div id="header">
-            <table id="thead">
-                <tr>
-                    <td>Название</td>
-                    <td>Введите количество</td>
-                    <td>Доступно</td>
-                    <td>Цена</td>
-                </tr>
-            </table>
+            </div>
+            <form action="ordering" class="order">
 
+            </form>
         </div>
-        <form action="ordering" class="order">
-
-        </form>
     </article>
     <aside id="right"></aside>
 </main>
+<footer>
+    <p>© ОАО «Хлебушек», 2024</p>
+</footer>
+<a href='#' class="stt"></a>
 <script th:inline="javascript">
-    var products = [[${products}]];
-    var html = "";
+    let products = [[${products}]];
+    let html = "";
     let quantityNew = [];
     for (let i = 0; i < products.length; i++) {
         html += `<table>
@@ -62,7 +66,7 @@
             <label for="bread${i}">${products[i]["nameProd"]}</label>
         </td>
         <td>
-            <input type="text" id="bread${i}"/>
+            <input type="text" min="0" id="bread${i}"/>
         </td>
         <td>
             <span id="bread${i}Value">${products[i]["quantityProd"]}</span>
@@ -74,18 +78,16 @@
 </table>
     `;
     }
-    html +=`
+    html += `
         <div class="container">
             <table>
-                <td>
-                    <label for="deliveryAddress">Введите адрес доставки: </label>
+                    <p>Введите адрес доставки: </p>
                     <input id="deliveryAddress"/>
-                </td>
             </table>
 
-            <button type="button" class="but">Заказать</button>
+            <button type="button" id="changeBtn" class="but">Заказать</button>
         </div>
-    <h1 id="order"></h1>
+    <h3 id="order"></h3>
         `
     let add = document.querySelector(".order");
     add.innerHTML = html;
@@ -103,9 +105,14 @@
                     quantityNew.push({prodId: prodId, quantity: inputQuantity});
             }
         }
-
+        let address = document.getElementById("deliveryAddress").value;
+        let infoMessage = document.getElementById("order").textContent;
         if (success === products.length) {
-            document.getElementById("order").textContent = "Успешно";
+            if (address == null) {
+                infoMessage = "Введите адрес";
+                return;
+            }
+            infoMessage = "Успешно";
             var xhr = new XMLHttpRequest();
             // var url = "";
             // fetch('http://127.0.0.1:4040/api/tunnels')
@@ -118,8 +125,8 @@
             //     .catch(error => console.error('Ошибка получения IP-адреса ngrok:', error));
 
             let user = getCookie("cyxaruk");
-            let data = JSON.stringify({"user": user, "quant_list": quantityNew});
-
+            let data = JSON.stringify({"user": user, "quant_list": quantityNew,"address":address});
+            quantityNew = [];
             // xhr.open("POST", url, true);
             xhr.open("POST", "http://localhost:8080/ordering", true);
 
@@ -144,11 +151,6 @@
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
 </script>
-<footer>
-    <p>© ОАО «Хлебушек», 2024</p>
-</footer>
-<a href='#' class="stt"></a>
-<link rel="stylesheet" type="text/css" href="/css/styleO.css?v=6">
 
 </body>
 

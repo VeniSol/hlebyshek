@@ -30,7 +30,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/admin/**").hasAuthority(Permission.ADMIN.getPermission())
                         .requestMatchers("/ordering").hasAuthority(Permission.USER.getPermission())
                         .requestMatchers("/profile").hasAuthority(Permission.USER.getPermission())
-
+                        .requestMatchers("/delivery/**").hasAuthority(Permission.DELIVERY.getPermission())
                         .requestMatchers("/orderDelete/**").hasAuthority(Permission.USER.getPermission())
 
                         .anyRequest().permitAll())

@@ -26,8 +26,23 @@
 <main>
     <aside id="left"></aside>
     <article>
-        <h1 id="panelNameProfile">Личный кабинет</h1>
-        <h1 id="nameUser">2</h1>
+        <h1 id="panelNameProfile">Меню заказов</h1>
+        <h1 id="nameUser"></h1>
+        <div id="menu">
+            <h3 id="tableName">Принятые заказы</h3>
+            <div id="header">
+                <table id="thead">
+                    <tr>
+                        <td>Название</td>
+                        <td>Количество</td>
+                        <td>Адрес доставки</td>
+                        <td>Дата/Время заказа</td>
+                        <td>Статус</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="adoptedOrders"></div>
+        </div>
         <div id="menu">
             <h3 id="tableName">Активные заказы</h3>
             <div id="header">
@@ -37,11 +52,12 @@
                         <td>Количество</td>
                         <td>Адрес доставки</td>
                         <td>Дата/Время заказа</td>
-                        <td>Отмена</td>
+                        <td>Статус</td>
                     </tr>
                 </table>
             </div>
             <div class="activeOrders"></div>
+        </div>
     </article>
     <aside id="right"></aside>
 </main>
@@ -50,10 +66,10 @@
 </footer>
 <a href='#' class="stt"></a>
 <script th:inline="javascript">
-    let orders = [[${activeOrders}]];
-    let html = "";
     let name = getCookie("cyxaruk");
     document.getElementById("nameUser").textContent = name;
+    let orders = [[${adoptedOrders}]];
+    let html = "";
     for (let i = 0; i < orders.length; i++) {
         html += `<table>
             <tr>
@@ -70,8 +86,36 @@
                     <label id="orderQuantity${i}">${orders[i]["dateTime"]}</label>
                 </td>
                 <td>
-                    <form id="${i}" action="/setStatus/${orders[i]["id"]}" method="post">
-                        <input type="submit" value="Выполнен">
+                    <form id="${i}" action="/delivery/setStatusDelivered/${orders[i]["id"]}" method="post">
+                        <input type="submit" value="Выполнить">
+                    </form>
+                </td>
+            </tr>
+        </table>
+    `;
+    }
+    let adoptedOrders = document.querySelector(".adoptedOrders");
+    adoptedOrders.innerHTML = html;
+    let orders2 = [[${activeOrders}]];
+    let html2 = "";
+    for (let i = 0; i < orders2.length; i++) {
+        html2 += `<table>
+            <tr>
+                 <td>
+                    <label id="bread${i}Value">${orders2[i]["product"]["nameProd"]}</label>
+                </td>
+                <td>
+                    <label id="orderQuantity${i}">${orders2[i]["quantity"]}</label>
+                </td>
+                <td>
+                    <label id="orderQuantity${i}">${orders2[i]["address"]}</label>
+                </td>
+                <td>
+                    <label id="orderQuantity${i}">${orders2[i]["dateTime"]}</label>
+                </td>
+                <td>
+                    <form id="${i}" action="/delivery/setStatusAdopted/${orders2[i]["id"]}" method="post">
+                        <input type="submit" value="Принять">
                     </form>
                 </td>
             </tr>
@@ -79,7 +123,13 @@
     `;
     }
     let activeOrders = document.querySelector(".activeOrders");
-    activeOrders.innerHTML = html;
+    activeOrders.innerHTML = html2;
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
 </script>
 </body>
 

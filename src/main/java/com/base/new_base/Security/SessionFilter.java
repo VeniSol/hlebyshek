@@ -30,6 +30,7 @@ public class SessionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
             String cookie = sessionService.getCookie("cyxaruk",request);
             if (cookie != null) {
+
                 UserDTO user = userService.findByLogin(cookie);
                 if (user==null) SecurityContextHolder.clearContext();
                 else{
@@ -45,7 +46,7 @@ public class SessionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (ServletException | IOException e) {
-            logger.error(e);
+            e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }

@@ -62,33 +62,43 @@
     let priceNew = [];
     for (let i = 0; i < products.length; i++) {
         html += `<table>
-    <tr>
-        <td>
-            <label for="bread${i}">${products[i]["nameProd"]}</label>
-        </td>
-            <td>
-            <span id="bread${i}Value">${products[i]["quantityProd"]}</span>
-        </td>
-        <td>
-            <input type="text" id="newQuant${i}"/>
-        </td>
-        <td>
-            <span id="bread${i}Price">${products[i]["priceProd"]}</span>
-        </td>
-        <td>
-            <input type="text" id="newPrice${i}"/>
-        </td>
+                <tr>
+                    <td>
+                        <label for="bread${i}">${products[i]["nameProd"]}</label>
+                    </td>
+                    <td>
+                        <span id="bread${i}Value">${products[i]["quantityProd"]}</span>
+                    </td>
+                    <td>
+                        <input type="text" id="newQuant${i}"/>
+                    </td>
+                    <td>
+                        <span id="bread${i}Price">${products[i]["priceProd"]}</span>
+                    </td>
+                    <td>
+                        <input type="text" id="newPrice${i}"/>
+                    </td>
 
-    </tr>
-</table>
-    `;
+                </tr>
+            </table>
+                `;
     }
     html += `
-            <div class="container">
-                <button type="button" id="changeBtn" class="changeButton">Изменить</button>
-            </div>
+            < div
 
-`
+        class
+
+        = "container" >
+            < button
+        type = "button"
+        id = "changeBtn"
+
+        class
+
+        = "changeButton" > Изменить < /button>
+    </div>
+
+        `
 
     document.querySelector(".changeProd").innerHTML = html;
     let button = document.querySelector(".changeButton");

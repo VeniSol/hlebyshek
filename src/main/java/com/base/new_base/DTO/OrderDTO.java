@@ -1,5 +1,6 @@
 package com.base.new_base.DTO;
 
+import com.base.new_base.Entity.Status;
 import com.base.new_base.Entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,10 +17,11 @@ public class OrderDTO {
     private int quantity;
     private String address;
     private String dateTime;
-    private Boolean status;
+    private Status status;
     private String dateTimeOfReceipt;
+    private String deliverer;
 
-    public OrderDTO(UserDTO user, ProductDTO product, int quantity,String address, Boolean status) {
+    public OrderDTO(UserDTO user, ProductDTO product, int quantity,String address, Status status) {
 
         this.user = user;
         this.product = product;

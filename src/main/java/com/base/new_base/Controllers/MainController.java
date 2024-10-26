@@ -6,6 +6,7 @@ import com.base.new_base.DTO.ProductDTO;
 import com.base.new_base.DTO.UserDTO;
 import com.base.new_base.Entity.Order;
 import com.base.new_base.Entity.Role;
+import com.base.new_base.Entity.Status;
 import com.base.new_base.Repositories.OrderRepository;
 import com.base.new_base.Services.OrderService;
 import com.base.new_base.Services.ProductService;
@@ -26,7 +27,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 
 @Controller
@@ -61,7 +61,7 @@ public class MainController {
         if (user != null) {
             if (user.getPassword().equals(hashEncode.SHA256(userDTO.getPassword()))) {
                 setCookie(response, user);
-                if(user.getRole()== Role.DELIVERY) return "redirect:/delivery";
+                if (user.getRole() == Role.DELIVERY) return "redirect:/delivery";
                 return "redirect:/ordering";
             } else {
                 return "redirect:/?error";
@@ -72,7 +72,7 @@ public class MainController {
     }
 
     @PostMapping("/signup")
-    public String signUpSent(@ModelAttribute("user") UserDTO userDTO,HttpServletResponse response,@ModelAttribute("user") UserDTO user) {
+    public String signUpSent(@ModelAttribute("user") UserDTO userDTO, HttpServletResponse response, @ModelAttribute("user") UserDTO user) {
         userDTO.setPassword(hashEncode.SHA256(userDTO.getPassword()));
         userDTO.setRole(Role.USER);
         userService.save(userDTO);
@@ -81,16 +81,12 @@ public class MainController {
 
     }
 
-    private void setCookie(HttpServletResponse response, UserDTO user){
+    private void setCookie(HttpServletResponse response, UserDTO user) {
         Cookie cookie = new Cookie("cyxaruk", user.getLogin());
         cookie.setMaxAge(24 * 60 * 60);
         response.addCookie(cookie);
     }
 
-    @GetMapping("/delivery")
-    public String goDeliveryMenu(Model model) {
-        return "delivery";
-    }
 
     @GetMapping("/products")
     public String goProducts() {
@@ -110,23 +106,23 @@ public class MainController {
         JSONObject jsonData = (JSONObject) new JSONParser().parse(requestDataList);
         String userLogin = (String) jsonData.get("user");
         String address = (String) jsonData.get("address");
-        LocalDateTime currentDateTime = LocalDateTime.now();
         JSONArray quantityArray = (JSONArray) jsonData.get("quant_list");
         for (Object order : quantityArray) {
             JSONObject orderJSON = (JSONObject) order;
             int prodId = (int) (long) orderJSON.get("prodId");
             int quantity = (int) (long) orderJSON.get("quantity");
             productService.updateQuantity(prodId, quantity);
-            OrderDTO orderDTO = new OrderDTO(userService.findByLogin(userLogin), productService.findById(prodId), quantity,address,false);
+            OrderDTO orderDTO = new OrderDTO(userService.findByLogin(userLogin), productService.findById(prodId), quantity, address, Status.ACTIVE);
             orderService.save(orderDTO);
         }
         return "{result:'complete'}";
     }
 
     @GetMapping("/orders")
-    public String AllOrders(){
+    public String AllOrders() {
         return "orders";
     }
+
     @GetMapping("/admin")
     public String goAdminPanel(Model model) {
         ArrayList<ProductDTO> productDTOS = productService.findAll();
@@ -170,11 +166,11 @@ public class MainController {
     public String profile(Model model, HttpServletRequest request) {
         String login = sessionService.getCookie("cyxaruk", request);
         UserDTO user = userService.findByLogin(login);
-        model.addAttribute("activeOrders", orderService.findByUserAndStatus(user,false));
-        model.addAttribute("deliveredOrders",  orderService.findByUserAndStatus(user,true));
+        model.addAttribute("activeOrders", orderService.findByUserAndStatus(user, Status.ADOPTED, Status.ACTIVE));
+        model.addAttribute("deliveredOrders", orderService.findByUserAndStatus(user, Status.DELIVERED));
         model.addAttribute("user", user);
         return "profile";
- }
+    }
 
     @PostMapping("/admin/orderDelete/{id}")
     public String delOrder(@PathVariable int id) {
@@ -193,11 +189,32 @@ public class MainController {
         return "redirect:/profile";
     }
 
-    @GetMapping("/get-role")
-    public String getRole(HttpServletRequest request) {
+    @GetMapping("/delivery")
+    public String goDeliveryMenu(Model model, HttpServletRequest request) {
         String login = sessionService.getCookie("cyxaruk", request);
-        UserDTO user = userService.findByLogin(login);
-        return user.getRole().toString();
+        model.addAttribute("adoptedOrders", orderService.findByDelivererAndStatus(login, Status.ADOPTED));
+        model.addAttribute("activeOrders", orderService.findByStatus(Status.ACTIVE));
+        return "delivery";
     }
+
+    @PostMapping("/delivery/setStatusAdopted/{id}")
+    public String setStatusAdopted(HttpServletRequest request, @PathVariable int id) {
+        String name = sessionService.getCookie("cyxaruk", request);
+        Order order = orderRepository.findById(id);
+        order.setStatus(Status.ADOPTED);
+        order.setDeliverer(name);
+        orderService.update(order);
+        return "redirect:/delivery";
+    }
+
+    @PostMapping("/delivery/setStatusDelivered/{id}")
+    public String setStatusDelivered(@PathVariable int id) {
+        Order order = orderRepository.findById(id);
+        order.setDateTimeOfReceipt(LocalDateTime.now());
+        order.setStatus(Status.DELIVERED);
+        orderService.update(order);
+        return "redirect:/delivery";
+    }
+
 }
 

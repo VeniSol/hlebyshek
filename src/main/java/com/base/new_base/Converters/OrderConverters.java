@@ -19,6 +19,7 @@ public class OrderConverters {
         orderConvert.setProduct(ProductConverters.productDtoToProduct(order.getProduct()));
         orderConvert.setAddress(order.getAddress());
         orderConvert.setStatus(order.getStatus());
+        orderConvert.setDeliverer(order.getDeliverer());
         return orderConvert;
     }
 
@@ -31,6 +32,7 @@ public class OrderConverters {
         orderConvert.setDateTime(getFormatDateTime(order.getOrderDateTime()));
         orderConvert.setDateTimeOfReceipt(getFormatDateTime(order.getDateTimeOfReceipt()));
         orderConvert.setStatus(order.getStatus());
+        orderConvert.setDeliverer(order.getDeliverer());
         return orderConvert;
     }
 

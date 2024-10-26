@@ -1,7 +1,7 @@
 package com.base.new_base.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,7 +25,10 @@ public class Order {
     @Column(name = "date_time_of_receipt")
     private LocalDateTime dateTimeOfReceipt;
     @Column(name = "status")
-    private Boolean status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     @Column(name = "address")
     private String address;
+    @Column(name = "deliverer")
+    private String deliverer;
 }

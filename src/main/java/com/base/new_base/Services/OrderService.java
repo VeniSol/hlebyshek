@@ -8,6 +8,7 @@ import com.base.new_base.DTO.ProductDTO;
 import com.base.new_base.DTO.UserDTO;
 import com.base.new_base.Entity.Order;
 import com.base.new_base.Entity.Product;
+import com.base.new_base.Entity.Status;
 import com.base.new_base.Entity.User;
 import com.base.new_base.Repositories.OrderRepository;
 import com.base.new_base.Repositories.ProductRepository;
@@ -57,7 +58,31 @@ public class OrderService {
         if (orderRepository.findById(id) != null) orderRepository.deleteById(id);
     }
 
-    public List<OrderDTO> findByUserAndStatus(UserDTO user, boolean status) {
-        return OrderConverters.allOrderToOrderDto(orderRepository.findByUserAndStatus(UserConverters.userDtoToUser(user),status));
+    public List<OrderDTO> findByUserAndStatus(UserDTO user, Status... status) {
+        List<OrderDTO> orders = new ArrayList<>();
+        for (Status statuses : status) {
+            orders.addAll(OrderConverters.allOrderToOrderDto(orderRepository.findByUserAndStatus(UserConverters.userDtoToUser(user), statuses)));
+        }
+        return orders;
+    }
+
+    public ArrayList<OrderDTO> findByStatus(Status status) {
+        List<Order> orders = orderRepository.findByStatus(status);
+        if (orders.isEmpty()) return new ArrayList<>();
+        ArrayList<OrderDTO> ordersDTOs = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDTO orderDTO = OrderConverters.orderToOrderDto(order);
+            orderDTO.setUser(UserConverters.userToUserDto(order.getUser()));
+            ordersDTOs.add(orderDTO);
+        }
+        return ordersDTOs;
+    }
+
+    public void update(Order order) {
+        orderRepository.save(order);
+    }
+
+    public List<OrderDTO> findByDelivererAndStatus(String nameDeliverer, Status status) {
+        return OrderConverters.allOrderToOrderDto(orderRepository.findByDelivererAndStatus(nameDeliverer, status));
     }
 }

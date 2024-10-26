@@ -106,13 +106,13 @@
             }
         }
         let address = document.getElementById("deliveryAddress").value;
-        let infoMessage = document.getElementById("order").textContent;
+        let infoMessage = document.getElementById("order");
         if (success === products.length) {
-            if (address == null) {
-                infoMessage = "Введите адрес";
+            if (!address.trim()) {
+                infoMessage.textContent = "Введите адрес";
                 return;
             }
-            infoMessage = "Успешно";
+            infoMessage.textContent = "Успешно";
             var xhr = new XMLHttpRequest();
             // var url = "";
             // fetch('http://127.0.0.1:4040/api/tunnels')
@@ -140,7 +140,7 @@
 
 
         } else {
-            document.getElementById("order").textContent = "Неверно введено количество";
+            infoMessage.textContent = "Неверно введено количество";
             quantityNew = []
         }
     });

@@ -20,15 +20,23 @@ const formOpenBtn = document.querySelector("#form-open"),
 
 formOpenBtn.addEventListener("click", () => {
         if (checkCookie("cyxaruk")) {
-            var xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
             xhr.open("GET", "http://localhost:8080/get-role", true);
             xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.responseType = 'json';
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    let user = xhr.response;
+                    if(user.role==="DELIVERY")
+                        window.location.replace("/delivery");
+                    else
+                        window.location.replace("/profile");
+                } else {
+                    console.error("Ошибка на сервере: " + xhr.status);
+                }
+            };
             xhr.send();
-            xhr.onreadystatechange = (e) => {
-                console.log(xhr.responseText);
-            }
 
-            // window.location.replace("/profile");
         } else
             home.classList.add("show")
     }

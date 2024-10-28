@@ -20,7 +20,7 @@
         <ul class="nav_items">
             <li class="nav_item">
                 <a href="/profile" class="nav_link">Личный кабинет</a>
-                <a href="/orders" class="nav_link">Заказы</a>
+                <a href="/admin/orders" class="nav_link">Заказы</a>
             </li>
         </ul>
         <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
@@ -49,6 +49,7 @@
         </div>
     </article>
     <aside id="right"></aside>
+    </div>
 </main>
 <footer>
     <p>© ОАО «Хлебушек», 2024</p>
@@ -83,22 +84,11 @@
             </table>
                 `;
     }
-    html += `
-            < div
-
-        class
-
-        = "container" >
-            < button
-        type = "button"
-        id = "changeBtn"
-
-        class
-
-        = "changeButton" > Изменить < /button>
-    </div>
-
-        `
+    html +=
+       ` <div class="container">
+            <button type="button" id="changeBtn" class="changeButton"> Изменить </button>
+        </div>
+`
 
     document.querySelector(".changeProd").innerHTML = html;
     let button = document.querySelector(".changeButton");

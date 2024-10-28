@@ -64,7 +64,8 @@
 <footer>
     <p>© ОАО «Хлебушек», 2024</p>
 </footer>
-<a href='#' class="stt"></a>
+<a href='#' class="stt"></a><script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+
 <script th:inline="javascript">
     let name = getCookie("cyxaruk");
     document.getElementById("nameUser").textContent = name;
@@ -80,10 +81,10 @@
                     <label id="orderQuantity${i}">${orders[i]["quantity"]}</label>
                 </td>
                 <td>
-                    <label id="orderQuantity${i}">${orders[i]["address"]}</label>
+                    <label id="orderAddress${i}">${orders[i]["address"]}</label>
                 </td>
                 <td>
-                    <label id="orderQuantity${i}">${orders[i]["dateTime"]}</label>
+                    <label id="orderDateTime${i}">${orders[i]["dateTime"]}</label>
                 </td>
                 <td>
                     <form id="${i}" action="/delivery/setStatusDelivered/${orders[i]["id"]}" method="post">
@@ -108,10 +109,10 @@
                     <label id="orderQuantity${i}">${orders2[i]["quantity"]}</label>
                 </td>
                 <td>
-                    <label id="orderQuantity${i}">${orders2[i]["address"]}</label>
+                    <label id="orderAddress${i}">${orders2[i]["address"]}</label>
                 </td>
                 <td>
-                    <label id="orderQuantity${i}">${orders2[i]["dateTime"]}</label>
+                    <label id="orderDateTime${i}">${orders2[i]["dateTime"]}</label>
                 </td>
                 <td>
                     <form id="${i}" action="/delivery/setStatusAdopted/${orders2[i]["id"]}" method="post">

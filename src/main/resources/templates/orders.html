@@ -34,30 +34,24 @@
         <h1 id="panelName">Admin панель</h1>
         <div id="menu">
             <h3 id="tableName">История заказов</h3>
-
-            <!-- Фильтры для поиска -->
             <div id="filters">
-                <!-- Фильтр по типу заказа -->
                 <label for="orderStatus">Тип заказа</label>
                 <select id="orderStatus">
-                    <option value="active">Активные</option>
-                    <option value="delivered">Доставленные</option>
+                    <option value="all">Все заказы</option>
+                    <option value="ACTIVE">Активные</option>
+                    <option value="ADOPTED">В пути</option>
+                    <option value="DELIVERED">Доставленные</option>
                 </select>
-
-                <!-- Фильтр по пользователям -->
                 <label for="userSelect">Пользователь</label>
                 <select id="userSelect">
                     <option value="all">Все пользователи</option>
-                    <!-- Здесь будут подгружаться пользователи из сервера -->
                 </select>
 
-                <!-- Фильтр по времени -->
                 <label for="startTime">Дата с</label>
-                <input type="date" id="startTime">
+                <input type="datetime-local" id="startTime">
                 <label for="endTime">Дата по</label>
-                <input type="date" id="endTime">
+                <input type="datetime-local" id="endTime">
 
-                <!-- Кнопка для применения фильтров -->
                 <button id="filterBtn">Вывод заказов</button>
             </div>
 
@@ -82,15 +76,13 @@
 </footer>
 <a href='#' class="stt"></a>
 
-<!-- Скрипт -->
 <script th:inline="javascript">
-    var orders = [[${orders}]];
-    var users = [[${users}]];  // список пользователей с сервера
-    var htmlOrder = "";
+    let orders = [[${orders}]];
+    let users = [[${users}]];
+    let htmlOrder = "";
     let quantityNewOrder = [];
-
-    // Добавление пользователей в выпадающий список
     let userSelect = document.getElementById("userSelect");
+
     users.forEach(user => {
         let option = document.createElement("option");
         option.value = user.id;
@@ -98,7 +90,6 @@
         userSelect.appendChild(option);
     });
 
-    // Функция отображения заказов
     function renderOrders(orders) {
         htmlOrder = "";
         for (let i = 0; i < orders.length; i++) {
@@ -106,12 +97,10 @@
             <tr>
                 <td><span for="name${i}">${orders[i]["user"]["login"]}</span></td>
                 <td><label id="bread${i}Value">${orders[i]["product"]["nameProd"]}</label></td>
-                <td><input type="text" id="orderQuantity${i}" Value=${orders[i]["quantity"]}></td>
-                <td>
-                    <form id="${i}" action="/admin/orderDelete/${orders[i]["id"]}" method="post">
-                        <input type="submit" value="Удалить заказ">
-                    </form>
-                </td>
+                <td><input type="text" id="orderQuantity${i}" value=${orders[i]["quantity"]}></td>
+                 <td><label id="orderAddress${i}">${orders[i]["address"]}</label></td>
+                <td><label id="orderDateTime${i}">${orders[i]["dateTime"]}</label></td>
+                <td><form id="${i}" action="/admin/orderDelete/${orders[i]["id"]}" method="post"><input type="submit" value="Удалить заказ"></form></td>
             </tr>
             </table>`;
         }
@@ -121,14 +110,13 @@
             </div>`;
         document.querySelector(".changeOrder").innerHTML = htmlOrder;
 
-        // Обработчик изменения заказов
         document.querySelector(".buttonOrder").addEventListener('click', function () {
             for (let i = 0; i < orders.length; i++) {
                 let newQuant = document.getElementById("orderQuantity" + i).value;
                 quantityNewOrder.push(newQuant);
             }
-            var data = JSON.stringify({"quantity": quantityNewOrder});
-            var xhr = new XMLHttpRequest();
+            let data = JSON.stringify({"quantity": quantityNewOrder});
+            let xhr = new XMLHttpRequest();
             xhr.open("POST", "http://localhost:8080/admin/editOrder", true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(data);
@@ -136,29 +124,35 @@
         });
     }
 
-    // Первоначальная загрузка заказов
     renderOrders(orders);
 
-    // Обработка фильтров
     document.getElementById("filterBtn").addEventListener("click", function () {
-        var status = document.getElementById("orderStatus").value;
-        var userId = document.getElementById("userSelect").value;
-        var startDate = document.getElementById("startTime").value;
-        var endDate = document.getElementById("endTime").value;
+        let status = document.getElementById("orderStatus").value;
+        let userId = document.getElementById("userSelect").value;
+        let startDate = document.getElementById("startTime").value;
+        let endDate = document.getElementById("endTime").value;
 
-        // Формирование фильтров
-        var filteredOrders = orders.filter(order => {
-            var orderDate = new Date(order["orderDate"]);
-            var isStatusMatch = (status === "all" || order["status"] === status);
-            var isUserMatch = (userId === "all" || order["user"]["id"] === userId);
-            var isDateMatch = (!startDate || orderDate >= new Date(startDate)) &&
-                (!endDate || orderDate <= new Date(endDate));
+        let filteredOrders = orders.filter(order => {
+            let orderDate = parseDate(order["dateTime"]); // Преобразуем дату заказа
+            let isStatusMatch = (status === "all" || order["status"] === status);
+            let isUserMatch = (userId === "all" || String(order["user"]["id"]) === String(userId));
+            let isDateMatch = (!startDate || orderDate >= new Date(startDate)) && (!endDate || orderDate <= new Date(endDate));
+
             return isStatusMatch && isUserMatch && isDateMatch;
         });
 
-        // Отображение отфильтрованных заказов
         renderOrders(filteredOrders);
     });
+    function parseDate(dateString) {
+        // Разбиваем строку по пробелу, чтобы разделить время и дату
+        let [timePart, datePart] = dateString.split(' ');
+        let [hours, minutes] = timePart.split(':').map(Number);
+        let [day, month, year] = datePart.split('.').map(Number);
+
+        // Месяцы в JavaScript начинаются с 0, поэтому уменьшаем номер месяца на 1
+        return new Date(year, month - 1, day, hours, minutes);
+    }
+
 </script>
 
 </body>

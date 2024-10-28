@@ -166,7 +166,8 @@ public class MainController {
     public String profile(Model model, HttpServletRequest request) {
         String login = sessionService.getCookie("cyxaruk", request);
         UserDTO user = userService.findByLogin(login);
-        model.addAttribute("activeOrders", orderService.findByUserAndStatus(user, Status.ADOPTED, Status.ACTIVE));
+        model.addAttribute("activeOrders", orderService.findByUserAndStatus(user,  Status.ACTIVE));
+        model.addAttribute("adoptedOrders", orderService.findByUserAndStatus(user,  Status.ADOPTED));
         model.addAttribute("deliveredOrders", orderService.findByUserAndStatus(user, Status.DELIVERED));
         model.addAttribute("user", user);
         return "profile";
@@ -175,7 +176,7 @@ public class MainController {
     @PostMapping("/admin/orderDelete/{id}")
     public String delOrder(@PathVariable int id) {
         orderService.delOrderById(id);
-        return "redirect:/admin";
+        return "redirect:/admin/orders";
     }
 
     @PostMapping("/orderDelete/{id}")
@@ -214,6 +215,13 @@ public class MainController {
         order.setStatus(Status.DELIVERED);
         orderService.update(order);
         return "redirect:/delivery";
+    }
+    @GetMapping("/admin/orders")
+    public String adminOrderList(Model model, HttpServletRequest request) {
+        String login = sessionService.getCookie("cyxaruk", request);
+        model.addAttribute("orders",orderService.findAll());
+        model.addAttribute("users", userService.findAll());
+        return "orders";
     }
 
 }

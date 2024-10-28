@@ -1,8 +1,10 @@
 package com.base.new_base.Services;
 
+import com.base.new_base.Converters.OrderConverters;
 import com.base.new_base.Converters.UserConverters;
 import com.base.new_base.DTO.OrderDTO;
 import com.base.new_base.DTO.UserDTO;
+import com.base.new_base.Entity.Order;
 import com.base.new_base.Entity.User;
 import com.base.new_base.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,18 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserRepository userRepository;
+
+    public ArrayList<UserDTO> findAll() {
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()) return new ArrayList<>();
+        ArrayList<UserDTO> usersDTOs = new ArrayList<>();
+        for (User user : users) {
+            UserDTO userDTO = UserConverters.userToUserDto(user);
+            usersDTOs.add(userDTO);
+        }
+        return usersDTOs;
+    }
+
 
     public UserDTO findById(int id) {
         User user = userRepository.findById(id);

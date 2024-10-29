@@ -42,8 +42,9 @@ a {
 
 input {
     border-radius: 0.3rem;
-    width: 50%;
     font-size: 1vw;
+    padding: 4px 2px;
+    width: 60%;
 }
 
 label {
@@ -447,7 +448,7 @@ input[type="submit"] {
     cursor: pointer;
     padding: 5px 3px;
     text-align: center;
-    width: 60%;
+    width: auto;
 }
 input[type="submit"]:hover {
     transform: scale(1.05);

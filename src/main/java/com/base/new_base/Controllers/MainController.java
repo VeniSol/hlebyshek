@@ -60,9 +60,9 @@ public class MainController {
         UserDTO user = userService.findByLogin(userDTO.getLogin());
         if (user != null) {
             if (user.getPassword().equals(hashEncode.SHA256(userDTO.getPassword()))) {
-                setCookie(response, user);
+                setCookie(response, user.getLogin());
                 if (user.getRole() == Role.DELIVERY) return "redirect:/delivery";
-                return "redirect:/ordering";
+                return "redirect:/profile";
             } else {
                 return "redirect:/?error";
             }
@@ -79,13 +79,13 @@ public class MainController {
         userDTO.setPassword(hashEncode.SHA256(userDTO.getPassword()));
         userDTO.setRole(Role.USER);
         userService.save(userDTO);
-        setCookie(response, user);
+        setCookie(response, user.getLogin());
         return "redirect:/ordering";
 
     }
 
-    private void setCookie(HttpServletResponse response, UserDTO user) {
-        Cookie cookie = new Cookie("cyxaruk", user.getLogin());
+    private void setCookie(HttpServletResponse response, String login) {
+        Cookie cookie = new Cookie("cyxaruk", login);
         cookie.setMaxAge(24 * 60 * 60);
         response.addCookie(cookie);
     }
@@ -98,8 +98,11 @@ public class MainController {
 
 
     @GetMapping("/ordering")
-    public String goOrdering(Model model) {
+    public String goOrdering(Model model, HttpServletRequest request) {
         model.addAttribute("products", productService.findAll());
+        String login = sessionService.getCookie("cyxaruk", request);
+        UserDTO user = userService.findByLogin(login);
+        model.addAttribute("user", user);
         return "ordering";
     }
 
@@ -165,15 +168,15 @@ public class MainController {
         return "{result:'complete'}";
     }
 
-    @GetMapping("/profile")
-    public String profile(Model model, HttpServletRequest request) {
+    @GetMapping("/orderHistory")
+    public String orderHistory(Model model, HttpServletRequest request) {
         String login = sessionService.getCookie("cyxaruk", request);
         UserDTO user = userService.findByLogin(login);
         model.addAttribute("activeOrders", orderService.findByUserAndStatus(user, Status.ACTIVE));
         model.addAttribute("adoptedOrders", orderService.findByUserAndStatus(user, Status.ADOPTED));
         model.addAttribute("deliveredOrders", orderService.findByUserAndStatus(user, Status.DELIVERED));
         model.addAttribute("user", user);
-        return "profile";
+        return "orderHistory";
     }
 
     @PostMapping("/admin/orderDelete/{id}")
@@ -190,7 +193,7 @@ public class MainController {
             productService.addQuantity(order.getProduct().getId(), order.getQuantity());
             orderRepository.delete(order);
         }
-        return "redirect:/profile";
+        return "redirect:/orderHistory";
     }
 
     @GetMapping("/delivery")
@@ -232,5 +235,56 @@ public class MainController {
         return "orders";
     }
 
+    @GetMapping("/profile")
+    public String goProfile(Model model, HttpServletRequest request) {
+        String login = sessionService.getCookie("cyxaruk", request);
+        UserDTO user = userService.findByLogin(login);
+        model.addAttribute("user", user);
+        return "profile";
+    }
+
+    @PostMapping("/saveUserInfo")
+    public String saveUserInfo(@ModelAttribute("user") UserDTO updateUser, HttpServletRequest request, HttpServletResponse response) {
+        String login = sessionService.getCookie("cyxaruk", request);
+        UserDTO user = userService.findByLogin(login);
+        if (!login.equals(updateUser.getLogin())) {
+            setCookie(response, updateUser.getLogin());
+        }
+        updateUser.setId(user.getId());
+        updateUser.setPassword(user.getPassword());
+        updateUser.setRole(user.getRole());
+        updateUser.setOrder(user.getOrder());
+        updateUser.setAddresses(user.getAddresses());
+        userService.update(updateUser);
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/addAddress")
+    public String addAddress(@RequestParam("address") String address, HttpServletRequest request) {
+        String login = sessionService.getCookie("cyxaruk", request);
+        UserDTO user = userService.findByLogin(login);
+        user.addAddress(address);
+        userService.update(user);
+
+        return "redirect:/profile";
+    }
+
+    @PostMapping("delAddress")
+    public String delAddress(@RequestParam("companyAddress") String address, HttpServletRequest request) {
+        String login = sessionService.getCookie("cyxaruk", request);
+        UserDTO user = userService.findByLogin(login);
+        user.delAddress(address);
+        userService.update(user);
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/repeatOrder/{id}")
+    public String repeatOrder(HttpServletRequest request,@PathVariable int id) {
+        String login = sessionService.getCookie("cyxaruk", request);
+        Order order = orderRepository.findById(id);
+        OrderDTO orderDTO = new OrderDTO(userService.findByLogin(login), productService.findById(order.getProduct().getId()), order.getQuantity(), order.getAddress(), Status.ACTIVE);
+        orderService.save(orderDTO);
+        return "redirect:/orderHistory";
+    }
 }
 

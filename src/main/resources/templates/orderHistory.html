@@ -20,6 +20,7 @@
         <ul class="nav_items">
             <li class="nav_item">
                 <a href="/ordering" class="nav_link">Заказ продукции</a>
+                <a href="/profile" class="nav_link">Личный кабинет</a>
                 <a href="/admin" th:if="${user.getRole() == T(com.base.new_base.Entity.Role).ADMIN}" class="nav_link">Admin
                     панель</a>
             </li>
@@ -89,6 +90,7 @@
                         <td>Адрес доставки</td>
                         <td>Дата/Время заказа</td>
                         <td>Дата/Время доставки</td>
+                        <td>Повторить заказ</td>
                     </tr>
                 </table>
             </div>
@@ -164,6 +166,11 @@
                 <td><label id="orderAddress${i}">${orders3[i]["address"]}</label></td>
                 <td><label id="orderDateTime${i}">${orders3[i]["dateTime"]}</label></td>
                 <td><label id="orderDateTimeOfReceipt${i}">${orders3[i]["dateTimeOfReceipt"]}</label></td>
+                <td>
+                    <form id="${i}" action="/repeatOrder/${orders3[i]["id"]}" method="post">
+                        <input type="submit" value="Повторить">
+                    </form>
+                </td>
             </tr>
         </table>`;
     }

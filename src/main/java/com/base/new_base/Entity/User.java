@@ -23,7 +23,20 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "surname")
+    private String surname;
+    @Column(name = "company_name")
+    private String companyName;
+    @Column(name = "number")
+    private String number;
+    @Column(name = "email")
+    private String email;
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<Order> orders;
-
+    @ElementCollection
+    @CollectionTable(name = "addresses", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "address")
+    private List<String> addresses;
 }

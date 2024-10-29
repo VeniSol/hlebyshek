@@ -32,7 +32,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/profile").hasAuthority(Permission.USER.getPermission())
                         .requestMatchers("/delivery/**").hasAuthority(Permission.DELIVERY.getPermission())
                         .requestMatchers("/orderDelete/**").hasAuthority(Permission.USER.getPermission())
-
+                        .requestMatchers("/saveUserInfo").hasAuthority(Permission.USER.getPermission())
+                        .requestMatchers("/orderHistory").hasAuthority(Permission.USER.getPermission())
                         .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS)).
                 logout(logout -> logout

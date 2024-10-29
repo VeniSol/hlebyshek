@@ -55,6 +55,7 @@
 <a href='#' class="stt"></a>
 <script th:inline="javascript">
     let products = [[${products}]];
+    let user = [[${user}]]
     let html = "";
     let quantityNew = [];
     for (let i = 0; i < products.length; i++) {
@@ -81,12 +82,17 @@
     </tr>
 </table>`;
     }
-    html +=`
-        <div class="container">
+    html +=
+        `<div class="container">
             <table>
-                <p>Введите адрес доставки:</p>
-                <input id="deliveryAddress" autocomplete="off"/>
-                <ul id="suggestions" class="suggestions-list"></ul>
+                <label for="companyAddress">Выберите адрес компании:</label>
+                <select id="companyAddress" name="companyAddress">`
+
+    for(let i = 0;i<user["addresses"].length;i++){
+        html +=`<option value="${i}">${user["addresses"][i]}</option>`
+    }
+    html+=`
+                </select>
             </table>
             <button type="button" id="changeBtn" class="but">Заказать</button>
         </div>
@@ -106,7 +112,8 @@
                     quantityNew.push({prodId: prodId, quantity: inputQuantity});
             }
         }
-        let address = document.getElementById("deliveryAddress").value;
+        var selectElement = document.getElementById("companyAddress");
+        var address = selectElement.options[selectElement.selectedIndex].text;
         let infoMessage = document.getElementById("order");
         if (success === products.length) {
             if (!address.trim()) {
@@ -138,37 +145,7 @@
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
 </script>
-<script >
 
-    const deliveryInput = document.getElementById('deliveryAddress');
-    const suggestionsList = document.getElementById('suggestions');
-
-    deliveryInput.addEventListener('input', function () {
-        const query = deliveryInput.value;
-        if (query.length > 2) { // минимальная длина для запроса
-            fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=4bbc9384-4943-4f8b-97f5-dc98c46b4515&geocode=${encodeURIComponent(query)}&format=json`)
-                .then(response => response.json())
-                .then(data => {
-                    suggestionsList.innerHTML = ''; // очищаем предыдущие подсказки
-                    const suggestions = data.response.GeoObjectCollection.featureMember;
-
-                    suggestions.forEach(item => {
-                        const address = item.GeoObject.metaDataProperty.GeocoderMetaData.text;
-                        const li = document.createElement('li');
-                        li.textContent = address;
-                        li.onclick = () => {
-                            deliveryInput.value = address;
-                            suggestionsList.innerHTML = ''; // очищаем список после выбора
-                        };
-                        suggestionsList.appendChild(li);
-                    });
-                })
-                .catch(error => console.error('Ошибка:', error));
-        } else {
-            suggestionsList.innerHTML = ''; // очищаем список, если ввод меньше 3 символов
-        }
-    });
-</script>
 
 </body>
 

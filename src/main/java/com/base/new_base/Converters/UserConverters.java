@@ -17,6 +17,12 @@ public class UserConverters {
         userConvert.setRole(user.getRole());
         userConvert.setPassword(user.getPassword());
         userConvert.setOrders(ordersConnectToUser(OrderConverters.allOrderDtoToOrder(user.getOrder()),userConvert));
+        userConvert.setAddresses(user.getAddresses());
+        userConvert.setName(user.getName());
+        userConvert.setSurname(user.getSurname());
+        userConvert.setCompanyName(user.getCompanyName());
+        userConvert.setNumber(user.getNumber());
+        userConvert.setEmail(user.getEmail());
         return userConvert;
     }
 
@@ -32,6 +38,12 @@ public class UserConverters {
         userConvert.setPassword(user.getPassword());
         userConvert.setRole(user.getRole());
         userConvert.setOrder(OrderConverters.allOrderToOrderDto(user.getOrders()));
+        userConvert.setAddresses(user.getAddresses());
+        userConvert.setName(user.getName());
+        userConvert.setSurname(user.getSurname());
+        userConvert.setCompanyName(user.getCompanyName());
+        userConvert.setNumber(user.getNumber());
+        userConvert.setEmail(user.getEmail());
         return userConvert;
     }
 }

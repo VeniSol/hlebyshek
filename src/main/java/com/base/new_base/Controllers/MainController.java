@@ -73,6 +73,9 @@ public class MainController {
 
     @PostMapping("/signup")
     public String signUpSent(@ModelAttribute("user") UserDTO userDTO, HttpServletResponse response, @ModelAttribute("user") UserDTO user) {
+        if (userService.findByLogin(userDTO.getLogin()) != null) {
+            return "redirect:/?errorSign";
+        }
         userDTO.setPassword(hashEncode.SHA256(userDTO.getPassword()));
         userDTO.setRole(Role.USER);
         userService.save(userDTO);

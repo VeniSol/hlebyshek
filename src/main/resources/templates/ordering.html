@@ -61,8 +61,14 @@
         html += `<table>
     <tr>
         <td>
-            <label for="bread${i}" class="tooltip">${products[i]["nameProd"]}</label>
-        </td>
+                <div class="product">
+                    <label for="bread${i}" class="tooltip">${products[i]["nameProd"]}</label>
+                    <div class="tooltip-content">
+                        <img src="/images/products/bread(${products[i]["id"]}).jpg" alt="${products[i]["nameProd"]}">
+                        <p>${products[i]["nameProd"]}</p>
+                    </div>
+                </div>
+            </td>
         <td>
             <input type="number" min="0" id="bread${i}" />
         </td>

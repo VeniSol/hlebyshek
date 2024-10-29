@@ -360,7 +360,7 @@ td:not(label) {
 }
 
 #filters select,
-#filters input[type="date"] {
+#filters input[type="datetime-local"] {
     padding: 5px 10px;
     font-size: 14px;
     border: 1px solid #ccc;
@@ -455,4 +455,30 @@ input[type="submit"]:hover {
 
 input[type="submit"]:active {
     transform: scale(0.98);
+}
+/*Для заказа продукции*/
+.product {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tooltip-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    z-index: 1;
+    width: 200px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.product:hover .tooltip-content {
+    display: block;
+}
+
+.tooltip-content img {
+    max-width: 100%;
+    height: auto;
 }

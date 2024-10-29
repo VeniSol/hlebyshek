@@ -18,6 +18,12 @@
             <img src="/images/1.png" class="logo">
             <a href="/" class="nav_logo">«Хлебушек»</a>
         </ul>
+        <ul class="nav_items">
+            <li class="nav_item">
+                <a href="/admin" th:if="${user.getRole() == T(com.base.new_base.Entity.Role).ADMIN}" class="nav_link">Admin
+                    панель</a>
+            </li>
+        </ul>
         <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
     </nav>
 </header>
@@ -28,7 +34,14 @@
     <article>
         <h1 id="panelNameProfile">Меню заказов</h1>
         <h1 id="nameUser"></h1>
-        <div id="menu">
+        <div class="order-filter">
+            <label for="orderType">Выберите тип заказов:</label>
+            <select id="orderType" onchange="showSelectedOrders()">
+                <option value="inTransit">Принятые заказы</option>
+                <option value="active">Активные заказы</option>
+            </select>
+        </div>
+        <div id="menu" class="orders-section adoptedOrdersSection">
             <h3 id="tableName">Принятые заказы</h3>
             <div id="header">
                 <table id="thead">
@@ -43,7 +56,7 @@
             </div>
             <div class="adoptedOrders"></div>
         </div>
-        <div id="menu">
+        <div id="menu" class="orders-section activeOrdersSection" style="display: none;">
             <h3 id="tableName">Активные заказы</h3>
             <div id="header">
                 <table id="thead">
@@ -64,13 +77,29 @@
 <footer>
     <p>© ОАО «Хлебушек», 2024</p>
 </footer>
-<a href='#' class="stt"></a><script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+<a href='#' class="stt"></a>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
 
 <script th:inline="javascript">
     let name = getCookie("cyxaruk");
     document.getElementById("nameUser").textContent = name;
     let orders = [[${adoptedOrders}]];
     let html = "";
+
+    function showSelectedOrders() {
+        const selectedOrderType = document.getElementById("orderType").value;
+        const sections = document.querySelectorAll('.orders-section');
+        sections.forEach(section => section.style.display = 'none');
+
+        if (selectedOrderType === "active") {
+            document.querySelector('.activeOrdersSection').style.display = 'block';
+        } else if (selectedOrderType === "inTransit") {
+            document.querySelector('.adoptedOrdersSection').style.display = 'block';
+        } else if (selectedOrderType === "delivered") {
+            document.querySelector('.deliveredOrdersSection').style.display = 'block';
+        }
+    }
+
     for (let i = 0; i < orders.length; i++) {
         html += `<table>
             <tr>
@@ -131,6 +160,7 @@
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
+    showSelectedOrders();
 </script>
 </body>
 

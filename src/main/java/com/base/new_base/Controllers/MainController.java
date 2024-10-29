@@ -166,8 +166,8 @@ public class MainController {
     public String profile(Model model, HttpServletRequest request) {
         String login = sessionService.getCookie("cyxaruk", request);
         UserDTO user = userService.findByLogin(login);
-        model.addAttribute("activeOrders", orderService.findByUserAndStatus(user,  Status.ACTIVE));
-        model.addAttribute("adoptedOrders", orderService.findByUserAndStatus(user,  Status.ADOPTED));
+        model.addAttribute("activeOrders", orderService.findByUserAndStatus(user, Status.ACTIVE));
+        model.addAttribute("adoptedOrders", orderService.findByUserAndStatus(user, Status.ADOPTED));
         model.addAttribute("deliveredOrders", orderService.findByUserAndStatus(user, Status.DELIVERED));
         model.addAttribute("user", user);
         return "profile";
@@ -193,8 +193,12 @@ public class MainController {
     @GetMapping("/delivery")
     public String goDeliveryMenu(Model model, HttpServletRequest request) {
         String login = sessionService.getCookie("cyxaruk", request);
-        model.addAttribute("adoptedOrders", orderService.findByDelivererAndStatus(login, Status.ADOPTED));
+        UserDTO user = userService.findByLogin(login);
+        if (user.getRole() == Role.ADMIN)
+            model.addAttribute("adoptedOrders", orderService.findByStatus(Status.ADOPTED));
+        else model.addAttribute("adoptedOrders", orderService.findByDelivererAndStatus(login, Status.ADOPTED));
         model.addAttribute("activeOrders", orderService.findByStatus(Status.ACTIVE));
+        model.addAttribute("user", user);
         return "delivery";
     }
 
@@ -216,10 +220,11 @@ public class MainController {
         orderService.update(order);
         return "redirect:/delivery";
     }
+
     @GetMapping("/admin/orders")
     public String adminOrderList(Model model, HttpServletRequest request) {
         String login = sessionService.getCookie("cyxaruk", request);
-        model.addAttribute("orders",orderService.findAll());
+        model.addAttribute("orders", orderService.findAll());
         model.addAttribute("users", userService.findAll());
         return "orders";
     }

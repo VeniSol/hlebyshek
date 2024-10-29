@@ -441,4 +441,18 @@ td:not(label) {
 .suggestions-list li:hover {
     background-color: #f0f0f0;
 }
+input[type="submit"] {
+    background-color: #3c3939;
+    color: #F5DEB3FF;
+    cursor: pointer;
+    padding: 5px 3px;
+    text-align: center;
+    width: 60%;
+}
+input[type="submit"]:hover {
+    transform: scale(1.05);
+}
 
+input[type="submit"]:active {
+    transform: scale(0.98);
+}

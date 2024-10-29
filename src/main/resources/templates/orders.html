@@ -8,6 +8,21 @@
     <link rel="shortcut icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="/css/otherStyle.css">
+    <style>
+        article {
+            flex-basis: auto;
+        }
+
+        aside {
+            flex-basis: auto;
+        }
+        table{
+            font-size: 1.1vw;
+        }
+        td,td:not(label){
+            width: 10%;
+        }
+    </style>
 </head>
 
 <body>
@@ -59,13 +74,23 @@
                 <table id="thead">
                     <tr>
                         <td>Пользователь</td>
-                        <td>Название</td>
+                        <td>Название продукта</td>
                         <td>Количество</td>
+                        <td>Адрес</td>
+                        <td>Статус</td>
+                        <td>Дата заказа</td>
+                        <td>Дата доставки</td>
+                        <td>Доставщик</td>
                         <td>Удаление</td>
                     </tr>
                 </table>
             </div>
-            <div class="changeOrder"></div>
+            <div>
+                <table class="changeOrder"></table>
+                <div class="container">
+                    <button type="button" id="changeBtn" class="buttonOrder">Изменить</button>
+                </div>
+            </div>
         </div>
     </article>
     <aside id="right"></aside>
@@ -89,25 +114,43 @@
         option.textContent = user.login;
         userSelect.appendChild(option);
     });
-
+    function getStatusText(status) {
+        switch (status) {
+            case "ACTIVE":
+                return "Активный";
+            case "ADOPTED":
+                return "В пути";
+            case "DELIVERED":
+                return "Доставлен";
+            default:
+                return status;
+        }
+    }
+    function checkNull(text){
+        if (text === null) {
+            return "-";
+        }
+        else return text;
+    }
     function renderOrders(orders) {
         htmlOrder = "";
         for (let i = 0; i < orders.length; i++) {
-            htmlOrder += `<table>
-            <tr>
-                <td><span for="name${i}">${orders[i]["user"]["login"]}</span></td>
-                <td><label id="bread${i}Value">${orders[i]["product"]["nameProd"]}</label></td>
-                <td><input type="text" id="orderQuantity${i}" value=${orders[i]["quantity"]}></td>
-                 <td><label id="orderAddress${i}">${orders[i]["address"]}</label></td>
-                <td><label id="orderDateTime${i}">${orders[i]["dateTime"]}</label></td>
-                <td><form id="${i}" action="/admin/orderDelete/${orders[i]["id"]}" method="post"><input type="submit" value="Удалить заказ"></form></td>
-            </tr>
-            </table>`;
+            htmlOrder += `
+                    <tr>
+                        <td><span id="userName${i}">${orders[i]["user"]["login"]}</span></td>
+                        <td><label id="breadName${i}">${orders[i]["product"]["nameProd"]}</label></td>
+                        <td><input type="text" id="orderQuantity${i}" value=${orders[i]["quantity"]}></td>
+                        <td><label id="orderAddress${i}">${orders[i]["address"]}</label></td>
+                        <td><label id="orderStatus${i}">${getStatusText(orders[i]["status"])}</label></td>
+                        <td><label id="orderDateTime${i}">${orders[i]["dateTime"]}</label></td>
+                        <td><label id="orderDateTimeOfReceipt${i}">${checkNull(orders[i]["dateTimeOfReceipt"])}</label></td>
+                        <td><label id="orderDeliverer${i}">${checkNull(orders[i]["deliverer"])}</label></td>
+                        <td>
+                            <form id="${i}" action="/admin/orderDelete/${orders[i]["id"]}" method="post"><input
+                                type="submit" value="Удалить заказ"/></form>
+                        </td>
+                    </tr>`;
         }
-        htmlOrder += `
-            <div class="container">
-                <button type="button" id="changeBtn" class="buttonOrder">Изменить</button>
-            </div>`;
         document.querySelector(".changeOrder").innerHTML = htmlOrder;
 
         document.querySelector(".buttonOrder").addEventListener('click', function () {
@@ -143,6 +186,7 @@
 
         renderOrders(filteredOrders);
     });
+
     function parseDate(dateString) {
         // Разбиваем строку по пробелу, чтобы разделить время и дату
         let [timePart, datePart] = dateString.split(' ');

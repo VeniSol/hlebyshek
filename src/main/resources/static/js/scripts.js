@@ -27,8 +27,10 @@ formOpenBtn.addEventListener("click", () => {
             xhr.onload = function () {
                 if (xhr.status === 200) {
                     let user = xhr.response;
-                    if(user.role==="DELIVERY")
+                    if (user.role === "DELIVERY")
                         window.location.replace("/delivery");
+                    else if (user.role === "DISPATCHER")
+                        window.location.replace("/dispatcher");
                     else
                         window.location.replace("/profile");
                 } else {

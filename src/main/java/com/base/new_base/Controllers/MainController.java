@@ -62,6 +62,7 @@ public class MainController {
             if (user.getPassword().equals(hashEncode.SHA256(userDTO.getPassword()))) {
                 setCookie(response, user.getLogin());
                 if (user.getRole() == Role.DELIVERY) return "redirect:/delivery";
+                if (user.getRole() == Role.DISPATCHER) return "redirect:/dispatcher";
                 return "redirect:/profile";
             } else {
                 return "redirect:/?error";
@@ -229,7 +230,6 @@ public class MainController {
 
     @GetMapping("/admin/orders")
     public String adminOrderList(Model model, HttpServletRequest request) {
-        String login = sessionService.getCookie("cyxaruk", request);
         model.addAttribute("orders", orderService.findAll());
         model.addAttribute("users", userService.findAll());
         return "orders";
@@ -279,12 +279,20 @@ public class MainController {
     }
 
     @PostMapping("/repeatOrder/{id}")
-    public String repeatOrder(HttpServletRequest request,@PathVariable int id) {
+    public String repeatOrder(HttpServletRequest request, @PathVariable int id) {
         String login = sessionService.getCookie("cyxaruk", request);
         Order order = orderRepository.findById(id);
         OrderDTO orderDTO = new OrderDTO(userService.findByLogin(login), productService.findById(order.getProduct().getId()), order.getQuantity(), order.getAddress(), Status.ACTIVE);
         orderService.save(orderDTO);
         return "redirect:/orderHistory";
+    }
+
+    @GetMapping("/dispatcher")
+    public String dispatcherMenu(Model model, HttpServletRequest request) {
+        model.addAttribute("delivery", userService.findByRole(Role.DELIVERY));
+        model.addAttribute("adoptedOrders", orderService.findByStatus(Status.ADOPTED));
+        model.addAttribute("activeOrders", orderService.findByStatus(Status.ACTIVE));
+        return "redirect:/dispatcher";
     }
 }
 

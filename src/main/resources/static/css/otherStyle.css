@@ -33,7 +33,17 @@ a {
     z-index: 100;
     padding: 0 20px;
 }
-
+select {
+    padding: 8px 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 2px solid #3c3939;
+    font-size: 1vw;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+    width: 70%;
+}
 .nav {
     max-width: 1400px;
     width: 100%;
@@ -430,7 +440,6 @@ td:not(label) {
     overflow-y: auto;
     background-color: white;
     font-size: 1vw;
-    width: 50%;
     margin: 0 auto;
 }
 

@@ -7,6 +7,7 @@ import lombok.Getter;
 public enum Permission {
     ADMIN("ADMIN"),
     DELIVERY("DELIVERY"),
+    DISPATCHER("DISPATCHER"),
     USER("USER");
     private final String permission;
 }

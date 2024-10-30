@@ -5,6 +5,7 @@ import com.base.new_base.Converters.UserConverters;
 import com.base.new_base.DTO.OrderDTO;
 import com.base.new_base.DTO.UserDTO;
 import com.base.new_base.Entity.Order;
+import com.base.new_base.Entity.Role;
 import com.base.new_base.Entity.User;
 import com.base.new_base.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,16 @@ public class UserService {
         UserDTO user = findById(id);
         if (user == null || user.getOrder() == null) return new ArrayList<>();
         return user.getOrder();
+    }
+
+    public ArrayList<UserDTO> findByRole(Role role) {
+        List<User> users = userRepository.findByRole(role);
+        if (users.isEmpty()) return new ArrayList<>();
+        ArrayList<UserDTO> usersDTOs = new ArrayList<>();
+        for (User user : users) {
+            UserDTO userDTO = UserConverters.userToUserDto(user);
+            usersDTOs.add(userDTO);
+        }
+        return usersDTOs;
     }
 }

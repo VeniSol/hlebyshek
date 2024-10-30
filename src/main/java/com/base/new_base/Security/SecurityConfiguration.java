@@ -34,6 +34,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/orderDelete/**").hasAuthority(Permission.USER.getPermission())
                         .requestMatchers("/saveUserInfo").hasAuthority(Permission.USER.getPermission())
                         .requestMatchers("/orderHistory").hasAuthority(Permission.USER.getPermission())
+                        .requestMatchers("/dispatcher").hasAuthority(Permission.DISPATCHER.getPermission())
                         .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS)).
                 logout(logout -> logout

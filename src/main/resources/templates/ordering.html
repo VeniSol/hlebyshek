@@ -112,8 +112,8 @@
                     quantityNew.push({prodId: prodId, quantity: inputQuantity});
             }
         }
-        var selectElement = document.getElementById("companyAddress");
-        var address = selectElement.options[selectElement.selectedIndex].text;
+        let selectElement = document.getElementById("companyAddress");
+        let address = selectElement.options[selectElement.selectedIndex].text;
         let infoMessage = document.getElementById("order");
         if (success === products.length) {
             if (!address.trim()) {
@@ -121,7 +121,7 @@
                 return;
             }
             infoMessage.textContent = "Успешно";
-            var xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
             let user = getCookie("cyxaruk");
             let data = JSON.stringify({"user": user, "quant_list": quantityNew, "address": address});
             quantityNew = [];

@@ -177,6 +177,7 @@ public class MainController {
         model.addAttribute("adoptedOrders", orderService.findByUserAndStatus(user, Status.ADOPTED));
         model.addAttribute("deliveredOrders", orderService.findByUserAndStatus(user, Status.DELIVERED));
         model.addAttribute("user", user);
+        model.addAttribute("name",(user.getName()==null||user.getName().isEmpty())?login:user.getName());
         return "orderHistory";
     }
 
@@ -292,7 +293,9 @@ public class MainController {
         model.addAttribute("delivery", userService.findByRole(Role.DELIVERY));
         model.addAttribute("adoptedOrders", orderService.findByStatus(Status.ADOPTED));
         model.addAttribute("activeOrders", orderService.findByStatus(Status.ACTIVE));
-        return "redirect:/dispatcher";
+        return "dispatcher";
     }
+
+
 }
 

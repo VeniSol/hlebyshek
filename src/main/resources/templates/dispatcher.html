@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="/css/otherStyle.css">
     <link rel="shortcut icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <style>
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .but {
+            background-color: #3c3939;
+            border-radius: 15px;
+            color: #ffffff;
+            cursor: pointer;
+            font-family: Roobert, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+            Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 16px;
+            font-weight: 600;
+            min-height: 60px;
+            min-width: 0;
+            touch-action: manipulation;
+            width: 50%;
+            margin: 20px;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -73,12 +97,6 @@
 </footer>
 <a href='#' class="stt"></a>
 <script th:inline="javascript">
-    let name = getCookie("cyxaruk");
-    document.getElementById("nameUser").textContent = name;
-    let orders = [[${adoptedOrders}]];
-    let delivery = [[${delivery}]];
-    let html = "";
-
     function showSelectedOrders() {
         const selectedOrderType = document.getElementById("orderType").value;
         const sections = document.querySelectorAll('.orders-section');
@@ -93,59 +111,168 @@
         }
     }
 
-    for (let i = 0; i < orders.length; i++) {
-        html += `<table>
-            <tr>
-                <td>
-                    <label id="bread${i}Value">${orders[i]["product"]["nameProd"]}</label>
-                </td>
-                <td>
-                    <label id="orderQuantity${i}">${orders[i]["quantity"]}</label>
-                </td>
-                <td>
-                    <label id="orderAddress${i}">${orders[i]["address"]}</label>
-                </td>
-                <td>
-                    <label id="orderDateTime${i}">${orders[i]["dateTime"]}</label>
-                <td>
-                <select id="deliveryPerson${i}">
-                    <option value="">Выберите доставщика</option>`;
-        for (let j = 0; j < delivery.length; j++) {
-            html += `<option">${delivery[i]["login"]}</option>`;
-        }
+    let name = getCookie("cyxaruk");
+    document.getElementById("nameUser").textContent = name;
 
-        html += `
-                </select>
+    let orders = [[${adoptedOrders}]];
+    let orders2 = [[${activeOrders}]];
+    let delivery = [[${delivery}]];
+
+    let html = "";
+    let html2 = "";
+    let updatedActiveOrders = []; // Массив для обновленных активных заказов
+    let updatedInProgressOrders = []; // Массив для обновленных заказов в пути
+
+    // Функция для добавления измененного заказа в массив (сохраняем только orderId и deliverer)
+    function updateOrder(orderArray, orderIndex, deliverer, isActive) {
+        let updatedOrder = {
+            orderId: orderArray[orderIndex].id,  // сохраняем только orderId
+            deliverer: deliverer                // и нового доставщика
+        };
+
+        // Выбор правильного массива в зависимости от типа заказа
+        let targetArray = isActive ? updatedActiveOrders : updatedInProgressOrders;
+
+        // Удалить уже существующий заказ с тем же orderId, чтобы избежать дубликатов
+        targetArray = targetArray.filter(order => order.orderId !== orderArray[orderIndex].id);
+        targetArray.push(updatedOrder);
+
+        // Обновляем массив после фильтрации
+        if (isActive) {
+            updatedActiveOrders = targetArray;
+        } else {
+            updatedInProgressOrders = targetArray;
+        }
+    }
+
+    // Генерация таблицы для activeOrders
+    function renderActiveOrder(orders2) {
+
+        for (let i = 0; i < orders2.length; i++) {
+            html2 += `<table>
+        <tr>
+            <td>
+                <label id="bread${i}Value">${orders2[i]["product"]["nameProd"]}</label>
+            </td>
+            <td>
+                <label id="orderQuantity${i}">${orders2[i]["quantity"]}</label>
+            </td>
+            <td>
+                <label id="orderAddress${i}">${orders2[i]["address"]}</label>
+            </td>
+            <td>
+                <label id="orderDateTime${i}">${orders2[i]["dateTime"]}</label>
+            </td>
+            <td>
+                <select id="deliveryPerson${i}" onchange="updateOrder(orders2, ${i}, this.value, true)">
+                    <option value=""></option>`;
+
+            for (let j = 0; j < delivery.length; j++) {
+                html2 += `<option value="${delivery[j]["login"]}">${delivery[j]["login"]}</option>`;
+            }
+
+            html2 += `</select>
             </td>
         </tr>
     </table>`;
-    }
-    let adoptedOrders = document.querySelector(".adoptedOrders");
-    adoptedOrders.innerHTML = html;
-    let orders2 = [[${activeOrders}]];
-    let html2 = "";
-    for (let i = 0; i < orders2.length; i++) {
-        html2 += `<table>
-            <tr>
-                 <td>
-                    <label id="bread${i}Value">${orders2[i]["product"]["nameProd"]}</label>
-                </td>
-                <td>
-                    <label id="orderQuantity${i}">${orders2[i]["quantity"]}</label>
-                </td>
-                <td>
-                    <label id="orderAddress${i}">${orders2[i]["address"]}</label>
-                </td>
-                <td>
-                    <label id="orderDateTime${i}">${orders2[i]["dateTime"]}</label>
-                </td>
+        }
 
-            </tr>
-        </table>
-    `;
+        html2 += `<div class="button-container">
+            <button type="button" id="changeActiveBtn" class="but">Назначить доставщиков для активных</button>
+         </div>`;
+        document.querySelector(".activeOrders").innerHTML = html2;
     }
-    let activeOrders = document.querySelector(".activeOrders");
-    activeOrders.innerHTML = html2;
+
+    renderActiveOrder(orders2);
+
+    function renderAdoptedOrder(orders) {
+        console.log(orders)
+        for (let i = 0; i < orders.length; i++) {
+            html += `<table>
+    <tr>
+        <td>
+            <label id="bread${i}Value">${orders[i]["product"]["nameProd"]}</label>
+        </td>
+        <td>
+            <label id="orderQuantity${i}">${orders[i]["quantity"]}</label>
+        </td>
+        <td>
+            <label id="orderAddress${i}">${orders[i]["address"]}</label>
+        </td>
+        <td>
+            <label id="orderDateTime${i}">${orders[i]["dateTime"]}</label>
+        </td>
+        <td>
+            <select id="deliveryPerson${i}" onchange="updateOrder(orders, ${i}, this.value, false)">`;
+
+            let assignedDeliveryPerson = orders[i]["deliverer"] || "";
+            for (let j = 0; j < delivery.length; j++) {
+                let isSelected = assignedDeliveryPerson === delivery[j]["login"] ? "selected" : "";
+                html += `<option value="${delivery[j]["login"]}" ${isSelected}>${delivery[j]["login"]}</option>`;
+            }
+
+            html += `</select>
+        </td>
+    </tr>
+</table>`;
+        }
+
+
+        html += `<div class="button-container">
+            <button type="button" id="changeInProgressBtn" class="but">Переназначить доставщиков для заказов в пути</button>
+         </div>`;
+
+
+        document.querySelector(".adoptedOrders").innerHTML = html;
+    }
+    renderAdoptedOrder(orders);
+
+    document.getElementById("changeActiveBtn").addEventListener('click', function () {
+        if (updatedActiveOrders.length > 0) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8080/dispatcher?status=active", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(updatedActiveOrders));
+            updatedActiveOrders = []; // Очистить массив после отправки
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) { // 4 означает, что запрос завершен
+                    if (xhr.status === 200) { // 200 означает успешный запрос
+                        let response = JSON.parse(xhr.responseText);
+                        html = "";
+                        html2 = "";
+                        renderActiveOrder(response["activeOrders"]);
+                        renderAdoptedOrder(response["adoptedOrders"]);
+                    }
+                }
+            };
+
+        }
+    });
+
+
+    document.getElementById("changeInProgressBtn").addEventListener('click', function () {
+        if (updatedInProgressOrders.length > 0) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8080/dispatcher", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    localStorage.setItem("orderType", "inTransit");
+                    window.location.replace("/dispatcher");
+                }
+            };
+            xhr.send(JSON.stringify(updatedInProgressOrders));
+            updatedInProgressOrders = [];
+
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const savedOrderType = localStorage.getItem("orderType") || "active";
+        document.getElementById("orderType").value = savedOrderType;
+        showSelectedOrders();
+        localStorage.removeItem("orderType");
+    });
+
 
     function getCookie(name) {
         const value = `; ${document.cookie}`;

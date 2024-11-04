@@ -85,4 +85,5 @@ public class OrderService {
     public List<OrderDTO> findByDelivererAndStatus(String nameDeliverer, Status status) {
         return OrderConverters.allOrderToOrderDto(orderRepository.findByDelivererAndStatus(nameDeliverer, status));
     }
+
 }

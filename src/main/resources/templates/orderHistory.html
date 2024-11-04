@@ -34,8 +34,8 @@
 <main>
     <aside id="left"></aside>
     <article>
-        <h1 id="panelNameProfile">Личный кабинет</h1>
-        <h1 id="nameUser"></h1>
+        <h1 id="panelNameProfile">Ваши заказы</h1>
+        <h1 id="nameUser" th:text="${name}"></h1>
         <div class="order-filter">
             <label for="orderType">Выберите тип заказов:</label>
             <select id="orderType" onchange="showSelectedOrders()">
@@ -108,8 +108,8 @@
 <script th:inline="javascript">
     let orders = [[${activeOrders}]];
     let html = "";
-    let name = getCookie("cyxaruk");
-    document.getElementById("nameUser").textContent = name;
+
+
 
     function showSelectedOrders() {
         const selectedOrderType = document.getElementById("orderType").value;

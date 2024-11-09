@@ -120,9 +120,9 @@
         //         url = ipAddress
         //     })
         //     .catch(error => console.error('Ошибка получения IP-адреса ngrok:', error));
+        // xhr.open("POST", url, true);
         var data = JSON.stringify({"typeData":"product","quantity": quantityNew, "price": priceNew});
 
-        // xhr.open("POST", url, true);
         xhr.open("POST", "http://localhost:8080/admin/editProduct", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(data);

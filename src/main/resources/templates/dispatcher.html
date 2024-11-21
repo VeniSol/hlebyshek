@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хлебзавод «Хлебушек»</title>
+    <title>Хлебозавод «Хлебушек»</title>
     <link rel="stylesheet" href="/css/otherStyle.css">
     <link rel="shortcut icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
@@ -41,6 +41,12 @@
         <ul id="logo">
             <img src="/images/1.png" class="logo">
             <a href="/" class="nav_logo">«Хлебушек»</a>
+        </ul>
+        <ul>
+            <li class="nav_item">
+                <a href="/admin" th:if="${user.getRole() == T(com.base.new_base.Entity.Role).ADMIN}" class="nav_link">Admin
+                    панель</a>
+            </li>
         </ul>
         <button id="logout" onclick="window.location.href = '/logout'">Выход</button>
     </nav>

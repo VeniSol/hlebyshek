@@ -24,13 +24,13 @@ public class UserDTO {
     private List<OrderDTO> order;
     private List<String> addresses;
 
-
-
     public UserDTO(int id, String login, String password) {
         this.login = login;
         this.password = password;
         this.id = id;
     }
+
+
 
     public void addAddress(String address) {
         addresses.add(address);

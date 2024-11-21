@@ -22,7 +22,6 @@ public class OrderDTO {
     private String deliverer;
 
     public OrderDTO(UserDTO user, ProductDTO product, int quantity,String address, Status status) {
-
         this.user = user;
         this.product = product;
         this.quantity = quantity;

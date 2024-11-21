@@ -290,9 +290,12 @@ public class MainController {
 
     @GetMapping("/dispatcher")
     public String dispatcherMenu(Model model, HttpServletRequest request) {
+        String login = sessionService.getCookie("cyxaruk", request);
+        UserDTO user = userService.findByLogin(login);
         model.addAttribute("delivery", userService.findByRole(Role.DELIVERY));
         model.addAttribute("adoptedOrders", orderService.findByStatus(Status.ADOPTED));
         model.addAttribute("activeOrders", orderService.findByStatus(Status.ACTIVE));
+        model.addAttribute("user", user);
         return "dispatcher";
     }
 
